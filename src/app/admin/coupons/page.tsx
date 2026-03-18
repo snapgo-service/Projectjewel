@@ -143,9 +143,9 @@ export default function CouponsPage() {
                   <td>
                     {coupon.discountType === 'percentage'
                       ? `${coupon.discountValue}%`
-                      : `$${coupon.discountValue}`}
+                      : `₹${coupon.discountValue}`}
                   </td>
-                  <td>${coupon.minOrderAmount}</td>
+                  <td>₹{coupon.minOrderAmount}</td>
                   <td>{coupon.maxUses === 0 ? 'Unlimited' : coupon.maxUses}</td>
                   <td>{coupon.currentUses}</td>
                   <td>{coupon.expiryDate}</td>

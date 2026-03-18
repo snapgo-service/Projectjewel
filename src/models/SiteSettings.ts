@@ -22,7 +22,7 @@ const SiteSettingsSchema = new Schema<ISiteSettings>({
   siteDescription: { type: String, default: 'Premium Diamond Jewelry Store' },
   freeShippingThreshold: { type: Number, default: 199 },
   shippingCost: { type: Number, default: 15 },
-  currency: { type: String, default: '$' },
+  currency: { type: String, default: '₹' },
   contactEmail: { type: String, default: 'info@jubilee.com' },
   contactPhone: { type: String, default: '+1 (555) 123-4567' },
   contactAddress: { type: String, default: '123 Jewelry Lane, Diamond District, NY 10036' },
@@ -30,7 +30,7 @@ const SiteSettingsSchema = new Schema<ISiteSettings>({
   socialTwitter: { type: String, default: '' },
   socialInstagram: { type: String, default: '' },
   socialPinterest: { type: String, default: '' },
-  announcementText: { type: String, default: 'Free shipping world wide for all orders over $199' },
+  announcementText: { type: String, default: 'Free shipping world wide for all orders over ₹199' },
   announcementActive: { type: Boolean, default: true },
 }, { timestamps: true });
 

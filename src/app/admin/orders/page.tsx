@@ -91,7 +91,7 @@ export default function OrdersAdminPage() {
                   <td>{order.customerName}</td>
                   <td>{order.email}</td>
                   <td>{order.items.length}</td>
-                  <td>${order.total.toFixed(2)}</td>
+                  <td>₹{order.total.toFixed(2)}</td>
                   <td>
                     <span
                       className={`${styles.badge} ${statusBadgeMap[order.status]}`}
@@ -190,8 +190,8 @@ export default function OrdersAdminPage() {
                     <tr key={index}>
                       <td>{item.productName}</td>
                       <td>{item.quantity}</td>
-                      <td>${item.price.toFixed(2)}</td>
-                      <td>${(item.quantity * item.price).toFixed(2)}</td>
+                      <td>₹{item.price.toFixed(2)}</td>
+                      <td>₹{(item.quantity * item.price).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>

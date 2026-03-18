@@ -32,7 +32,7 @@ export default function AdminDashboard() {
         </div>
         <div className={styles.statCard}>
           <div className={styles.statIcon}>💰</div>
-          <div className={styles.statValue}>${stats.totalRevenue.toLocaleString()}</div>
+          <div className={styles.statValue}>₹{stats.totalRevenue.toLocaleString()}</div>
           <div className={styles.statLabel}>Total Revenue</div>
         </div>
         <div className={styles.statCard}>
@@ -65,7 +65,7 @@ export default function AdminDashboard() {
                   <tr key={order.id}>
                     <td style={{ fontWeight: 500 }}>{order.id}</td>
                     <td>{order.customerName}</td>
-                    <td>${order.total}</td>
+                    <td>₹{order.total}</td>
                     <td>
                       <span className={`${styles.badge} ${styles[`badge${order.status.charAt(0).toUpperCase() + order.status.slice(1)}` as keyof typeof styles]}`}>
                         {order.status}
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
                   <td className={styles.textTruncate}>
                     {product.name}
                   </td>
-                  <td>${product.salePrice || product.price}</td>
+                  <td>₹{product.salePrice || product.price}</td>
                   <td>{'⭐'.repeat(Math.round(product.rating))} {product.rating > 0 ? product.rating.toFixed(1) : '—'}</td>
                 </tr>
               ))}

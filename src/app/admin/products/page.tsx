@@ -185,8 +185,8 @@ export default function ProductsPage() {
                   </td>
                   <td>{product.name}</td>
                   <td>{product.category}</td>
-                  <td>${product.price.toFixed(2)}</td>
-                  <td>{product.salePrice ? `$${product.salePrice.toFixed(2)}` : '—'}</td>
+                  <td>₹{product.price.toFixed(2)}</td>
+                  <td>{product.salePrice ? `₹${product.salePrice.toFixed(2)}` : '—'}</td>
                   <td>{product.rating}/5</td>
                   <td>
                     <span className={product.inStock ? styles.badgeActive : styles.badgeInactive}>

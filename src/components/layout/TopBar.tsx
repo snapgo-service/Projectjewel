@@ -14,7 +14,7 @@ const TopBar = () => {
           ))}
         </ul>
         <p className={styles.announcement}>
-          Free shipping world wide for all orders over $199
+          Free shipping world wide for all orders over ₹199
         </p>
         <div className={styles.shopNow}>
           <Link href="/shop">Shop Now</Link>

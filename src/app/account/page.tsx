@@ -249,7 +249,7 @@ function AccountContent() {
                                   {order.status}
                                 </span>
                               </td>
-                              <td style={{ padding: '12px 10px', fontSize: 14, color: '#222', fontWeight: 500 }}>${order.total}</td>
+                              <td style={{ padding: '12px 10px', fontSize: 14, color: '#222', fontWeight: 500 }}>₹{order.total}</td>
                             </tr>
                           ))}
                         </tbody>

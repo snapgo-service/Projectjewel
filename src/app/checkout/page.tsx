@@ -76,7 +76,7 @@ export default function CheckoutPage() {
     if (!coupon.isActive) { setCouponError('This coupon is no longer active'); return; }
     if (coupon.expiryDate && new Date(coupon.expiryDate) < new Date()) { setCouponError('This coupon has expired'); return; }
     if (coupon.maxUses > 0 && coupon.currentUses >= coupon.maxUses) { setCouponError('This coupon has reached its usage limit'); return; }
-    if (coupon.minOrderAmount > 0 && subtotal < coupon.minOrderAmount) { setCouponError(`Minimum order amount is $${coupon.minOrderAmount}`); return; }
+    if (coupon.minOrderAmount > 0 && subtotal < coupon.minOrderAmount) { setCouponError(`Minimum order amount is ₹${coupon.minOrderAmount}`); return; }
     if (coupon.applicableProducts.length > 0) {
       const hasApplicable = items.some(item => coupon.applicableProducts.includes(item.product.id));
       if (!hasApplicable) { setCouponError('This coupon is not applicable to items in your cart'); return; }
@@ -334,7 +334,7 @@ export default function CheckoutPage() {
                           Coupon &quot;{appliedCoupon.code}&quot; applied
                         </span>
                         <div style={{ fontSize: 12, color: '#059669' }}>
-                          {appliedCoupon.discountType === 'percentage' ? `${appliedCoupon.discountValue}% off` : `$${appliedCoupon.discountValue} off`}
+                          {appliedCoupon.discountType === 'percentage' ? `${appliedCoupon.discountValue}% off` : `₹${appliedCoupon.discountValue} off`}
                         </div>
                       </div>
                       <button type="button" onClick={removeCoupon} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: 12, fontWeight: 500 }}>Remove</button>
