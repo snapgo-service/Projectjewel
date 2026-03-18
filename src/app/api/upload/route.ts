@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import crypto from 'crypto';
+import dbConnect from '@/lib/mongodb';
+import Image from '@/models/Image';
 
 export async function POST(req: Request) {
   try {
@@ -24,16 +23,15 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const ext = path.extname(file.name) || `.${file.type.split('/')[1]}`;
-    const uniqueName = `${crypto.randomBytes(8).toString('hex')}${ext}`;
+    await dbConnect();
+    const image = await Image.create({
+      data: buffer,
+      contentType: file.type,
+      filename: file.name,
+      size: file.size,
+    });
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadDir, { recursive: true });
-
-    const filePath = path.join(uploadDir, uniqueName);
-    await writeFile(filePath, buffer);
-
-    return NextResponse.json({ url: `/uploads/${uniqueName}` });
+    return NextResponse.json({ url: `/api/images/${image._id}` });
   } catch (err) {
     console.error('Upload error:', err);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
