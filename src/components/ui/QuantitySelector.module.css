@@ -1,0 +1,46 @@
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  font-family: "Jost", sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.btn:hover:not(:disabled) {
+  background-color: #f7f7f7;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.display {
+  width: 50px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+  border-left: none;
+  border-right: none;
+  font-family: "Jost", sans-serif;
+  font-size: 14px;
+  color: #222222;
+  user-select: none;
+}

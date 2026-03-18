@@ -1,0 +1,31 @@
+.starRating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star {
+  display: inline-flex;
+  line-height: 1;
+}
+
+.star svg {
+  display: block;
+}
+
+/* Sizes */
+
+.sm .star svg {
+  width: 14px;
+  height: 14px;
+}
+
+.md .star svg {
+  width: 18px;
+  height: 18px;
+}
+
+.lg .star svg {
+  width: 24px;
+  height: 24px;
+}
