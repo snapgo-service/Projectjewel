@@ -16,8 +16,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Only PNG, JPG, JPEG, and WebP files are allowed' }, { status: 400 });
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File size must be under 5MB' }, { status: 400 });
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File size must be under 10MB' }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();

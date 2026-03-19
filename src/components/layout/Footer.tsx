@@ -7,7 +7,7 @@ import { useAdmin } from '@/store/AdminContext';
 import styles from './Footer.module.css';
 
 const Footer = () => {
-  const { settings } = useAdmin();
+  const { settings, categories } = useAdmin();
 
   const quickLinks = [
     { label: 'Home', href: '/' },
@@ -15,15 +15,6 @@ const Footer = () => {
     { label: 'About Us', href: '/about' },
     { label: 'Contact', href: '/contact' },
     { label: 'FAQs', href: '/faqs' },
-  ];
-
-  const categoryLinks = [
-    { label: 'Rings', href: '/categories/rings' },
-    { label: 'Earrings', href: '/categories/earrings' },
-    { label: 'Bracelets', href: '/categories/bracelets' },
-    { label: 'Necklaces', href: '/categories/necklaces' },
-    { label: 'Pendants', href: '/categories/pendants' },
-    { label: 'Brooches', href: '/categories/brooches' },
   ];
 
   const socialLinks = [
@@ -107,18 +98,20 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className={styles.column}>
-            <h4 className={styles.columnTitle}>Categories</h4>
-            <ul className={styles.linkList}>
-              {categoryLinks.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href} className={styles.footerLink}>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {categories.length > 0 && (
+            <div className={styles.column}>
+              <h4 className={styles.columnTitle}>Categories</h4>
+              <ul className={styles.linkList}>
+                {categories.map((cat) => (
+                  <li key={cat.slug}>
+                    <Link href={`/category/${cat.slug}`} className={styles.footerLink}>
+                      {cat.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div className={styles.column}>
             <h4 className={styles.columnTitle}>Contact Info</h4>
