@@ -1,8 +1,13 @@
+'use client';
+
 import Link from 'next/link';
 import { topBarLinks } from '@/data/navigation';
+import { useAdmin } from '@/store/AdminContext';
 import styles from './TopBar.module.css';
 
 const TopBar = () => {
+  const { settings } = useAdmin();
+
   return (
     <div className={styles.topBar}>
       <div className={styles.container}>
@@ -13,9 +18,11 @@ const TopBar = () => {
             </li>
           ))}
         </ul>
-        <p className={styles.announcement}>
-          Free shipping world wide for all orders over ₹199
-        </p>
+        {settings.announcementActive && settings.announcementText && (
+          <p className={styles.announcement}>
+            {settings.announcementText}
+          </p>
+        )}
         <div className={styles.shopNow}>
           <Link href="/shop">Shop Now</Link>
         </div>

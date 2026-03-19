@@ -11,7 +11,7 @@ const testimonials = [
   },
   {
     quote:
-      "I've been a loyal customer for years. Every piece from Jubilee tells a story of elegance and sophistication. Simply the best.",
+      "I've been a loyal customer for years. Every piece from Stellora Silver tells a story of elegance and sophistication. Simply the best.",
     name: 'Priya Sharma',
     location: 'Mumbai',
   },

@@ -136,7 +136,7 @@ export async function GET() {
 
     // Seed settings
     await SiteSettings.create({
-      siteName: 'Jubilee',
+      siteName: 'Stellora Silver',
       siteDescription: 'Premium Diamond Jewelry Store',
       freeShippingThreshold: 199,
       shippingCost: 15,

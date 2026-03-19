@@ -45,8 +45,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className={`${styles.sidebar} ${sidebarOpen ? '' : styles.sidebarClosed}`}>
         <div className={styles.sidebarHeader}>
           <Link href="/admin" className={styles.logo}>
-            <span className={styles.logoIcon}>J</span>
-            {sidebarOpen && <span className={styles.logoText}>Jubilee Admin</span>}
+            <span className={styles.logoIcon}>S</span>
+            {sidebarOpen && <span className={styles.logoText}>Stellora Admin</span>}
           </Link>
         </div>
         <nav className={styles.sidebarNav}>

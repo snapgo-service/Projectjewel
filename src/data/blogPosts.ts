@@ -15,7 +15,7 @@ export const blogPosts: BlogPost[] = [
 <h3>Setting Your Budget</h3>
 <p>While the traditional rule suggests spending two months' salary, the most important thing is to choose a ring that fits your budget while meeting your quality preferences.</p>`,
     image: IMAGES.products['sinead-ring'][0],
-    author: 'Jubilee Team',
+    author: 'Stellora Silver Team',
     date: '2024-01-15',
     category: 'Guides',
     tags: ['diamond', 'rings', 'guide'],
@@ -33,7 +33,7 @@ export const blogPosts: BlogPost[] = [
 <h3>Colored Gemstones</h3>
 <p>While diamonds remain timeless, colored gemstones like emeralds, sapphires, and rubies are gaining popularity for engagement rings and everyday wear.</p>`,
     image: IMAGES.products['eulla-earring'][0],
-    author: 'Jubilee Team',
+    author: 'Stellora Silver Team',
     date: '2024-02-10',
     category: 'Trends',
     tags: ['trends', 'fashion', 'style'],
@@ -51,7 +51,7 @@ export const blogPosts: BlogPost[] = [
 <h3>Professional Maintenance</h3>
 <p>Have your jewelry professionally inspected and cleaned at least once a year. Jewelers can check for loose stones, worn prongs, and other potential issues.</p>`,
     image: IMAGES.products['taneka-ring'][0],
-    author: 'Jubilee Team',
+    author: 'Stellora Silver Team',
     date: '2024-03-05',
     category: 'Care',
     tags: ['care', 'maintenance', 'tips'],

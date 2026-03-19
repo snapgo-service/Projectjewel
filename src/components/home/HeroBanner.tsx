@@ -34,7 +34,7 @@ export function HeroBanner() {
     <section className={styles.hero}>
       <Image
         src={slide.backgroundImage || IMAGES.heroBg}
-        alt="Jubilee Jewelry"
+        alt="Stellora Silver Jewellery"
         fill
         priority
         className={styles.bgImage}
@@ -81,17 +81,19 @@ export function HeroBanner() {
             </div>
           )}
         </div>
-        <div className={styles.productImage}>
-          <Image
-            src={slide.productImage || IMAGES.heroProduct}
-            alt="Featured Jewelry"
-            fill
-            sizes="400px"
-            style={{ objectFit: 'contain' }}
-            priority
-            unoptimized
-          />
-        </div>
+        {slide.productImage && (
+          <div className={styles.productImage}>
+            <Image
+              src={slide.productImage}
+              alt="Featured Jewelry"
+              fill
+              sizes="400px"
+              style={{ objectFit: 'contain' }}
+              priority
+              unoptimized
+            />
+          </div>
+        )}
       </div>
     </section>
   );

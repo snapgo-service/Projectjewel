@@ -1,0 +1,259 @@
+.page {
+  padding: 40px 0 60px;
+}
+
+.container {
+  max-width: 1430px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 500;
+  color: #222;
+}
+
+.clearBtn {
+  background: none;
+  border: 1px solid #e5e5e5;
+  padding: 8px 20px;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  font-family: 'Jost', sans-serif;
+}
+
+.clearBtn:hover {
+  border-color: #f44336;
+  color: #f44336;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 15px;
+}
+
+.empty svg {
+  margin-bottom: 20px;
+}
+
+.empty h2 {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.empty p {
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.shopBtn {
+  display: inline-block;
+  padding: 14px 40px;
+  background: #ce967e;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  transition: all 0.3s;
+}
+
+.shopBtn:hover {
+  background: #222;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.table th {
+  text-align: left;
+  padding: 16px 20px;
+  background: #f7f7f7;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #e5e5e5;
+  width: 140px;
+  vertical-align: top;
+}
+
+.table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 14px;
+  color: #555;
+  vertical-align: top;
+}
+
+.productCell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.removeBtn {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: #f7f7f7;
+  cursor: pointer;
+  font-size: 16px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.removeBtn:hover {
+  background: #f44336;
+  color: #fff;
+}
+
+.productImage {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: block;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f7f7f7;
+}
+
+.productName {
+  font-size: 15px;
+  font-weight: 500;
+  color: #222;
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.productName:hover {
+  color: #ce967e;
+}
+
+.priceCell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.originalPrice {
+  text-decoration: line-through;
+  color: #bbb;
+  font-size: 13px;
+}
+
+.salePrice {
+  font-weight: 600;
+  color: #ce967e;
+  font-size: 16px;
+}
+
+.ratingCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.noRating {
+  color: #999;
+  font-style: italic;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.inStock {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.outOfStock {
+  color: #f44336;
+  font-weight: 500;
+}
+
+.descCell {
+  line-height: 1.6;
+  max-width: 250px;
+}
+
+.addToCartBtn {
+  display: inline-block;
+  padding: 10px 24px;
+  background: #222;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s;
+  font-family: 'Jost', sans-serif;
+}
+
+.addToCartBtn:hover {
+  background: #ce967e;
+}
+
+.addToCartBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 24px;
+  }
+
+  .table th {
+    padding: 12px;
+    font-size: 12px;
+    width: 100px;
+  }
+
+  .table td {
+    padding: 12px;
+  }
+
+  .productImage {
+    width: 100px;
+    height: 100px;
+  }
+}

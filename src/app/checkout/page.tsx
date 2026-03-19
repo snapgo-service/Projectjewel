@@ -159,8 +159,8 @@ export default function CheckoutPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: data.currency,
-        name: 'Jubilee Jewelry',
-        description: 'Jewelry Order Payment',
+        name: 'Stellora Silver',
+        description: 'Jewellery Order Payment',
         order_id: data.orderId,
         handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
           // Verify payment

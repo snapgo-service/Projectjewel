@@ -1,7 +1,8 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 import { useAdmin } from '@/store/AdminContext';
 import { useCart } from '@/store/CartContext';
 import { useWishlist } from '@/store/WishlistContext';
@@ -12,6 +13,14 @@ import QuantitySelector from '@/components/ui/QuantitySelector';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import styles from './page.module.css';
 
+interface ReviewData {
+  _id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const { products, categories } = useAdmin();
@@ -19,10 +28,19 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const { addItem } = useCart();
   const { toggleItem, isInWishlist } = useWishlist();
 
+  const { data: session } = useSession();
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState('description');
+  const [reviews, setReviews] = useState<ReviewData[]>([]);
+  const [canReview, setCanReview] = useState(false);
+  const [reviewReason, setReviewReason] = useState('');
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewHover, setReviewHover] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewMessage, setReviewMessage] = useState('');
 
   if (!product) {
     return (
@@ -32,6 +50,52 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       </div>
     );
   }
+
+  const fetchReviews = useCallback(async () => {
+    const res = await fetch(`/api/reviews?productId=${product.id}`);
+    if (res.ok) setReviews(await res.json());
+  }, [product.id]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetch(`/api/reviews/can-review?productId=${product.id}`)
+        .then(res => res.json())
+        .then(data => {
+          setCanReview(data.canReview);
+          setReviewReason(data.reason || '');
+        });
+    }
+  }, [session, product.id]);
+
+  const handleSubmitReview = async () => {
+    if (!reviewRating || !reviewComment.trim()) return;
+    setReviewSubmitting(true);
+    setReviewMessage('');
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id, rating: reviewRating, comment: reviewComment }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setReviewMessage('Thank you for your review!');
+        setReviewRating(0);
+        setReviewComment('');
+        setCanReview(false);
+        fetchReviews();
+      } else {
+        setReviewMessage(data.error || 'Failed to submit review');
+      }
+    } catch {
+      setReviewMessage('Failed to submit review');
+    }
+    setReviewSubmitting(false);
+  };
 
   const category = categories.find((c) => c.slug === product.category);
   const relatedProducts = products
@@ -108,7 +172,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   </>
                 ) : product.priceRange ? (
                   <span className={styles.currentPrice}>
-                    {formatCurrency(product.priceRange[0])} – {formatCurrency(product.priceRange[1])}
+                    {formatCurrency(product.priceRange[0])}
                   </span>
                 ) : (
                   <span className={styles.currentPrice}>{formatCurrency(product.price)}</span>
@@ -186,7 +250,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               className={`${styles.tabBtn} ${activeTab === 'reviews' ? styles.tabBtnActive : ''}`}
               onClick={() => setActiveTab('reviews')}
             >
-              Reviews ({product.reviewCount})
+              Reviews ({reviews.length})
             </button>
           </div>
 
@@ -195,18 +259,67 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               <p>{product.description}</p>
             ) : (
               <div>
-                {product.reviewCount === 0 ? (
+                {/* Review Form */}
+                {session?.user && canReview && (
+                  <div className={styles.reviewForm}>
+                    <div className={styles.reviewFormTitle}>Write a Review</div>
+                    <div className={styles.starSelect}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          className={`${styles.starBtn} ${star <= (reviewHover || reviewRating) ? styles.starBtnActive : ''}`}
+                          onMouseEnter={() => setReviewHover(star)}
+                          onMouseLeave={() => setReviewHover(0)}
+                          onClick={() => setReviewRating(star)}
+                        >
+                          ★
+                        </button>
+                      ))}
+                    </div>
+                    <textarea
+                      className={styles.reviewTextarea}
+                      placeholder="Share your experience with this product..."
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                    />
+                    <button
+                      className={styles.submitReviewBtn}
+                      onClick={handleSubmitReview}
+                      disabled={reviewSubmitting || !reviewRating || !reviewComment.trim()}
+                    >
+                      {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                    </button>
+                  </div>
+                )}
+
+                {!session?.user && (
+                  <p className={styles.reviewMessage}>Please log in to leave a review.</p>
+                )}
+
+                {session?.user && !canReview && reviewReason === 'not_purchased' && (
+                  <p className={styles.reviewMessage}>You can only review products you have purchased.</p>
+                )}
+
+                {session?.user && !canReview && reviewReason === 'already_reviewed' && (
+                  <p className={styles.reviewMessage}>You have already reviewed this product.</p>
+                )}
+
+                {reviewMessage && (
+                  <p className={styles.reviewMessage}>{reviewMessage}</p>
+                )}
+
+                {/* Reviews List */}
+                {reviews.length === 0 ? (
                   <p>No reviews yet. Be the first to review this product!</p>
                 ) : (
-                  Array.from({ length: Math.min(product.reviewCount, 3) }).map((_, i) => (
-                    <div key={i} className={styles.reviewItem}>
-                      <div className={styles.reviewAuthor}>Customer {i + 1}</div>
-                      <StarRating rating={product.rating} size="sm" />
-                      <div className={styles.reviewDate}>January {10 + i}, 2024</div>
-                      <p className={styles.reviewText}>
-                        Beautiful piece of jewelry! The quality is excellent and it looks even better in person.
-                        Would highly recommend to anyone looking for fine jewelry.
-                      </p>
+                  reviews.map((review) => (
+                    <div key={review._id} className={styles.reviewItem}>
+                      <div className={styles.reviewAuthor}>{review.userName}</div>
+                      <StarRating rating={review.rating} size="sm" />
+                      <div className={styles.reviewDate}>
+                        {new Date(review.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </div>
+                      <p className={styles.reviewText}>{review.comment}</p>
                     </div>
                   ))
                 )}

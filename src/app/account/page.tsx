@@ -65,10 +65,7 @@ function AccountContent() {
       fetch('/api/orders')
         .then(res => res.ok ? res.json() : [])
         .then(data => {
-          const userOrders = Array.isArray(data)
-            ? data.filter((o: UserOrder & { email?: string }) => o.email === session.user?.email)
-            : [];
-          setOrders(userOrders);
+          setOrders(Array.isArray(data) ? data : []);
         })
         .catch(() => setOrders([]))
         .finally(() => setOrdersLoading(false));

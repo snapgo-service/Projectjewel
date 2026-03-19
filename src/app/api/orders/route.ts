@@ -6,12 +6,20 @@ import Order from '@/models/Order';
 export async function GET() {
   try {
     const session = await auth();
-    if (!session || session.user.role !== 'admin') {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await dbConnect();
-    const orders = await Order.find({}).sort({ date: -1 });
+
+    // Admin sees all orders, regular users see only their own
+    if (session.user.role === 'admin') {
+      const orders = await Order.find({}).sort({ createdAt: -1 });
+      return NextResponse.json(orders);
+    }
+
+    // Regular user: find orders by userId
+    const orders = await Order.find({ userId: session.user.id }).sort({ createdAt: -1 });
     return NextResponse.json(orders);
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -22,6 +30,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     await dbConnect();
+    const session = await auth();
     const body = await req.json();
 
     const { customerName, email, phone, address, items, total } = body;
@@ -32,6 +41,7 @@ export async function POST(req: Request) {
     const id = 'ORD-' + Date.now().toString(36).toUpperCase();
     const order = await Order.create({
       id,
+      userId: session?.user?.id || '',
       customerName,
       email,
       phone,

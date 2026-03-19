@@ -37,8 +37,8 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
   const renderPrice = () => {
     if (product.priceRange && product.priceRange.length === 2) {
       return (
-        <span className={styles.priceRange}>
-          {formatCurrency(product.priceRange[0])} – {formatCurrency(product.priceRange[1])}
+        <span className={styles.price}>
+          {formatCurrency(product.priceRange[0])}
         </span>
       );
     }

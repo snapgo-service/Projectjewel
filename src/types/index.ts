@@ -29,6 +29,7 @@ export interface Product {
   isNew?: boolean;
   isFeatured?: boolean;
   isHot?: boolean;
+  createdAt?: string;
 }
 
 export interface Category {

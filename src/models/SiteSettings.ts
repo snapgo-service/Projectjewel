@@ -18,7 +18,7 @@ export interface ISiteSettings extends Document {
 }
 
 const SiteSettingsSchema = new Schema<ISiteSettings>({
-  siteName: { type: String, default: 'Jubilee' },
+  siteName: { type: String, default: 'Stellora Silver' },
   siteDescription: { type: String, default: 'Premium Diamond Jewelry Store' },
   freeShippingThreshold: { type: Number, default: 199 },
   shippingCost: { type: Number, default: 15 },

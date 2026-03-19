@@ -178,8 +178,8 @@ const defaultPosters: Poster[] = [
 ];
 
 const defaultSettings: SiteSettings = {
-  siteName: 'Jubilee',
-  siteDescription: 'Premium Diamond Jewelry Store',
+  siteName: 'Stellora Silver',
+  siteDescription: 'Premium Artificial Jewellery Store',
   freeShippingThreshold: 199,
   shippingCost: 15,
   currency: '$',

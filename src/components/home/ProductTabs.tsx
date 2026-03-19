@@ -7,10 +7,8 @@ import styles from './ProductTabs.module.css';
 
 const tabs = [
   { key: 'all', label: 'All Products' },
-  { key: 'rings', label: 'Rings' },
-  { key: 'earrings', label: 'Earrings' },
-  { key: 'bracelets', label: 'Bracelets' },
-  { key: 'pendants', label: 'Pendants' },
+  { key: 'new', label: 'New Arrivals' },
+  { key: 'top', label: 'Top Rated Collections' },
 ];
 
 export function ProductTabs() {
@@ -20,7 +18,9 @@ export function ProductTabs() {
   const filtered =
     activeTab === 'all'
       ? products
-      : products.filter((p) => p.category === activeTab);
+      : activeTab === 'new'
+        ? [...products].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()).slice(0, 8)
+        : [...products].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 8);
 
   return (
     <section className={styles.section}>

@@ -15,7 +15,7 @@ export default function InstagramFeed() {
   return (
     <section className={styles.section}>
       <div className={styles.header}>
-        <h2 className={styles.title}>#JubileeStyle</h2>
+        <h2 className={styles.title}>#StelloraStyle</h2>
         <p className={styles.subtitle}>Follow us on Instagram for daily inspiration</p>
       </div>
 
@@ -24,7 +24,7 @@ export default function InstagramFeed() {
           <a key={index} href="#" className={styles.item}>
             <img
               src={src}
-              alt={`Jubilee Style ${index + 1}`}
+              alt={`Stellora Style ${index + 1}`}
               className={styles.image}
             />
             <div className={styles.overlay}>

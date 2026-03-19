@@ -15,7 +15,7 @@ export default function Newsletter() {
     <section className={styles.section}>
       <div className={styles.container}>
         <span className={styles.label}>NEWSLETTER</span>
-        <h2 className={styles.title}>Join the Jubilee Family</h2>
+        <h2 className={styles.title}>Join the Stellora Silver Family</h2>
         <p className={styles.subtitle}>
           Subscribe to receive exclusive offers, new arrivals, and styling tips
           directly to your inbox.

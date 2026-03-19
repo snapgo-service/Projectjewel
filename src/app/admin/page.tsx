@@ -15,7 +15,7 @@ export default function AdminDashboard() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Dashboard</h1>
-          <p className={styles.pageSubtitle}>Welcome to Jubilee Admin Panel</p>
+          <p className={styles.pageSubtitle}>Welcome to Stellora Silver Admin Panel</p>
         </div>
       </div>
 

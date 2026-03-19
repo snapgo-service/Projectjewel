@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { IMAGES } from '@/data/images';
@@ -8,6 +8,7 @@ import { mainNav } from '@/data/navigation';
 import { useWishlist } from '@/store/WishlistContext';
 import { useCart } from '@/store/CartContext';
 import MegaMenu from './MegaMenu';
+import SearchModal from './SearchModal';
 import styles from './Navbar.module.css';
 
 interface NavbarProps {
@@ -17,8 +18,10 @@ interface NavbarProps {
 const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
   const [isSticky, setIsSticky] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { items: wishlistItems } = useWishlist();
   const { items: cartItems } = useCart();
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
 
   const wishlistCount = mounted ? wishlistItems.length : 0;
   const cartCount = mounted ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
@@ -34,6 +37,7 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
   }, []);
 
   return (
+    <>
     <header className={`${styles.navbar} ${isSticky ? styles.sticky : ''}`}>
       <div className={styles.container}>
         <Link href="/" className={styles.logo}>
@@ -66,7 +70,7 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
         </nav>
 
         <div className={styles.actions}>
-          <button className={styles.actionBtn} aria-label="Search">
+          <button className={styles.actionBtn} aria-label="Search" onClick={() => setSearchOpen(true)}>
             <svg
               width="20"
               height="20"
@@ -148,6 +152,8 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
         </div>
       </div>
     </header>
+    <SearchModal isOpen={searchOpen} onClose={closeSearch} />
+    </>
   );
 };
 

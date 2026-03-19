@@ -283,6 +283,88 @@
   line-height: 1.6;
 }
 
+.reviewForm {
+  padding: 20px 0;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 20px;
+}
+
+.reviewFormTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 15px;
+}
+
+.starSelect {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.starBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 24px;
+  color: #ddd;
+  transition: color 0.2s;
+}
+
+.starBtn:hover,
+.starBtnActive {
+  color: #f5a623;
+}
+
+.reviewTextarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  margin-bottom: 15px;
+}
+
+.reviewTextarea:focus {
+  outline: none;
+  border-color: #ce967e;
+}
+
+.submitReviewBtn {
+  padding: 10px 25px;
+  background: #ce967e;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.3s;
+}
+
+.submitReviewBtn:hover {
+  background: #b8836d;
+}
+
+.submitReviewBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.reviewMessage {
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #666;
+  background: #f9f9f9;
+  border: 1px solid #e5e5e5;
+}
+
 @media (max-width: 768px) {
   .productLayout {
     grid-template-columns: 1fr;

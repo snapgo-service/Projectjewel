@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IOrder extends Document {
   id: string;
+  userId?: string;
   customerName: string;
   email: string;
   phone: string;
@@ -16,6 +17,7 @@ export interface IOrder extends Document {
 
 const OrderSchema = new Schema<IOrder>({
   id: { type: String, required: true, unique: true },
+  userId: { type: String, default: '' },
   customerName: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: String, default: '' },
