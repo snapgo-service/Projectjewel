@@ -13,7 +13,9 @@ const navItems = [
   { label: 'Products', href: '/admin/products', icon: '💎' },
   { label: 'Categories', href: '/admin/categories', icon: '📂' },
   { label: 'Blog Posts', href: '/admin/blog', icon: '📝' },
+  { label: 'Testimonials', href: '/admin/testimonials', icon: '⭐' },
   { label: 'Coupons', href: '/admin/coupons', icon: '🎟️' },
+  { label: 'Messages', href: '/admin/messages', icon: '💬' },
   { label: 'Orders', href: '/admin/orders', icon: '📦' },
   { label: 'Settings', href: '/admin/settings', icon: '⚙️' },
 ];

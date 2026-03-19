@@ -65,6 +65,26 @@ export interface Coupon {
   createdAt: string;
 }
 
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: 'unread' | 'read' | 'replied';
+  date: string;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  location: string;
+  quote: string;
+  rating: number;
+  isActive: boolean;
+  order: number;
+}
+
 export interface SiteSettings {
   siteName: string;
   siteDescription: string;
@@ -113,6 +133,15 @@ interface AdminContextType {
   addCoupon: (coupon: Omit<Coupon, 'id' | 'createdAt' | 'currentUses'>) => void;
   updateCoupon: (id: string, coupon: Partial<Coupon>) => void;
   deleteCoupon: (id: string) => void;
+  // Testimonials
+  testimonials: Testimonial[];
+  addTestimonial: (testimonial: Omit<Testimonial, 'id'>) => void;
+  updateTestimonial: (id: string, testimonial: Partial<Testimonial>) => void;
+  deleteTestimonial: (id: string) => void;
+  // Contact Messages
+  contactMessages: ContactMessage[];
+  updateContactMessageStatus: (id: string, status: ContactMessage['status']) => void;
+  deleteContactMessage: (id: string) => void;
   // Orders
   orders: Order[];
   updateOrderStatus: (id: string, status: Order['status']) => void;
@@ -242,6 +271,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const [categories, setCategories] = useState<Category[]>(defaultCategories);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(defaultBlogPosts);
   const [coupons, setCoupons] = useState<Coupon[]>(defaultCoupons);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
@@ -255,16 +286,20 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         productsData,
         categoriesData,
         blogData,
+        contactData,
         ordersData,
         settingsData,
+        testimonialsData,
       ] = await Promise.all([
         apiFetch<Slider[]>('/api/sliders'),
         apiFetch<Poster[]>('/api/posters'),
         apiFetch<Product[]>('/api/products'),
         apiFetch<Category[]>('/api/categories'),
         apiFetch<BlogPost[]>('/api/blog'),
+        apiFetch<ContactMessage[]>('/api/contact'),
         apiFetch<Order[]>('/api/orders'),
         apiFetch<SiteSettings>('/api/settings'),
+        apiFetch<Testimonial[]>('/api/testimonials'),
       ]);
 
       if (slidersData?.length) setSliders(slidersData);
@@ -272,7 +307,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       if (productsData?.length) setProducts(productsData);
       if (categoriesData?.length) setCategories(categoriesData);
       if (blogData?.length) setBlogPosts(blogData);
+      if (contactData) setContactMessages(Array.isArray(contactData) ? contactData : []);
       if (ordersData) setOrders(Array.isArray(ordersData) ? ordersData : []);
+      if (testimonialsData) setTestimonials(Array.isArray(testimonialsData) ? testimonialsData : []);
       if (settingsData?.siteName) setSettings(settingsData);
 
       setIsLoading(false);
@@ -400,6 +437,30 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     await apiFetch(`/api/blog/${id}`, { method: 'DELETE' });
   }, []);
 
+  // Testimonials
+  const addTestimonial = useCallback(async (testimonial: Omit<Testimonial, 'id'>) => {
+    const created = await apiFetch<Testimonial>('/api/testimonials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(testimonial),
+    });
+    if (created) setTestimonials(prev => [...prev, created]);
+  }, []);
+
+  const updateTestimonial = useCallback(async (id: string, data: Partial<Testimonial>) => {
+    setTestimonials(prev => prev.map(t => t.id === id ? { ...t, ...data } : t));
+    await apiFetch(`/api/testimonials/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+  }, []);
+
+  const deleteTestimonial = useCallback(async (id: string) => {
+    setTestimonials(prev => prev.filter(t => t.id !== id));
+    await apiFetch(`/api/testimonials/${id}`, { method: 'DELETE' });
+  }, []);
+
   // Coupons
   const addCoupon = useCallback(async (coupon: Omit<Coupon, 'id' | 'createdAt' | 'currentUses'>) => {
     const newCoupon: Coupon = {
@@ -417,6 +478,21 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   const deleteCoupon = useCallback(async (id: string) => {
     setCoupons(prev => prev.filter(c => c.id !== id));
+  }, []);
+
+  // Contact Messages
+  const updateContactMessageStatus = useCallback(async (id: string, status: ContactMessage['status']) => {
+    setContactMessages(prev => prev.map(m => m.id === id ? { ...m, status } : m));
+    await apiFetch(`/api/contact/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    });
+  }, []);
+
+  const deleteContactMessage = useCallback(async (id: string) => {
+    setContactMessages(prev => prev.filter(m => m.id !== id));
+    await apiFetch(`/api/contact/${id}`, { method: 'DELETE' });
   }, []);
 
   // Orders
@@ -453,7 +529,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       products, addProduct, updateProduct, deleteProduct,
       categories, addCategory, updateCategory, deleteCategory,
       blogPosts, addBlogPost, updateBlogPost, deleteBlogPost,
+      testimonials, addTestimonial, updateTestimonial, deleteTestimonial,
       coupons, addCoupon, updateCoupon, deleteCoupon,
+      contactMessages, updateContactMessageStatus, deleteContactMessage,
       orders, updateOrderStatus,
       settings, updateSettings,
       stats,

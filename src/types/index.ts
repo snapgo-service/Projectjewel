@@ -1,4 +1,4 @@
-export type CategorySlug = 'rings' | 'anklets' | 'bracelets' | 'earrings' | 'brooches' | 'necklaces' | 'pendants';
+export type CategorySlug = 'rings' | 'anklets' | 'bracelets' | 'earrings' | 'brooches' | 'necklaces' | 'pendants' | 'hairs' | 'gift';
 
 export interface ProductVariant {
   type: 'color' | 'size';

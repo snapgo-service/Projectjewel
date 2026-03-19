@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { categories } from '@/data/categories';
-import { CategorySlug } from '@/types';
+import { useState, useMemo } from 'react';
+import { useAdmin } from '@/store/AdminContext';
+import { Category, CategorySlug, Product } from '@/types';
 import styles from './ShopSidebar.module.css';
 
 interface ShopSidebarProps {
   onFilterChange: (filters: ShopFilters) => void;
   filters: ShopFilters;
+  products: Product[];
 }
 
 export interface ShopFilters {
@@ -25,9 +26,22 @@ const colors = [
   { label: 'Silver', value: '#C0C0C0' },
 ];
 
-export function ShopSidebar({ onFilterChange, filters }: ShopSidebarProps) {
+export function ShopSidebar({ onFilterChange, filters, products }: ShopSidebarProps) {
+  const { categories } = useAdmin();
   const [localPriceMin, setLocalPriceMin] = useState(filters.priceMin);
   const [localPriceMax, setLocalPriceMax] = useState(filters.priceMax);
+
+  // Compute actual product counts per category from products
+  const categoriesWithCounts = useMemo(() => {
+    const countMap: Record<string, number> = {};
+    products.forEach((p) => {
+      countMap[p.category] = (countMap[p.category] || 0) + 1;
+    });
+    return categories.map((cat) => ({
+      ...cat,
+      productCount: countMap[cat.slug] || 0,
+    }));
+  }, [categories, products]);
 
   const toggleCategory = (slug: CategorySlug) => {
     const newCats = filters.categories.includes(slug)
@@ -47,12 +61,33 @@ export function ShopSidebar({ onFilterChange, filters }: ShopSidebarProps) {
     onFilterChange({ ...filters, priceMin: localPriceMin, priceMax: localPriceMax });
   };
 
+  const clearFilters = () => {
+    setLocalPriceMin(0);
+    setLocalPriceMax(filters.priceMax);
+    onFilterChange({
+      categories: [],
+      priceMin: 0,
+      priceMax: filters.priceMax,
+      colors: [],
+      sort: filters.sort,
+    });
+  };
+
+  const hasActiveFilters =
+    filters.categories.length > 0 || filters.colors.length > 0 || filters.priceMin > 0;
+
   return (
     <aside className={styles.sidebar}>
+      {hasActiveFilters && (
+        <button className={styles.clearBtn} onClick={clearFilters}>
+          Clear All Filters
+        </button>
+      )}
+
       <div className={styles.widget}>
         <h3 className={styles.widgetTitle}>Categories</h3>
         <div className={styles.categoryList}>
-          {categories.map((cat) => (
+          {categoriesWithCounts.map((cat) => (
             <label key={cat.slug} className={styles.categoryItem}>
               <input
                 type="checkbox"

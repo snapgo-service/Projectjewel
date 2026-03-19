@@ -230,6 +230,7 @@ function AccountContent() {
                             <th style={{ padding: '12px 10px', fontSize: 14, color: '#222' }}>Date</th>
                             <th style={{ padding: '12px 10px', fontSize: 14, color: '#222' }}>Status</th>
                             <th style={{ padding: '12px 10px', fontSize: 14, color: '#222' }}>Total</th>
+                            <th style={{ padding: '12px 10px', fontSize: 14, color: '#222' }}>Action</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -247,6 +248,32 @@ function AccountContent() {
                                 </span>
                               </td>
                               <td style={{ padding: '12px 10px', fontSize: 14, color: '#222', fontWeight: 500 }}>₹{order.total}</td>
+                              <td style={{ padding: '12px 10px' }}>
+                                {(order.status === 'pending' || order.status === 'processing') ? (
+                                  <button
+                                    onClick={async () => {
+                                      if (!confirm('Are you sure you want to cancel this order?')) return;
+                                      const res = await fetch(`/api/orders/${order.id}`, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ status: 'cancelled' }),
+                                      });
+                                      if (res.ok) {
+                                        setOrders(orders.map(o => o.id === order.id ? { ...o, status: 'cancelled' } : o));
+                                      }
+                                    }}
+                                    style={{
+                                      padding: '5px 14px', fontSize: 12, background: 'none',
+                                      border: '1px solid #f44336', color: '#f44336', borderRadius: 4,
+                                      cursor: 'pointer', fontFamily: 'var(--font-primary)',
+                                    }}
+                                  >
+                                    Cancel
+                                  </button>
+                                ) : (
+                                  <span style={{ fontSize: 12, color: '#999' }}>—</span>
+                                )}
+                              </td>
                             </tr>
                           ))}
                         </tbody>

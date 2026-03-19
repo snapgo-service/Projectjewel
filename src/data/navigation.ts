@@ -25,17 +25,8 @@ export const mainNav: NavItem[] = [
       { label: 'Necklaces', href: '/category/necklaces' },
     ],
   },
-  {
-    label: 'Pages',
-    href: '#',
-    children: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Contact Us', href: '/contact' },
-      { label: 'FAQs', href: '/faqs' },
-      { label: 'Blog', href: '/blog' },
-      { label: 'My Account', href: '/account' },
-    ],
-  },
+  { label: 'Hairs', href: '/category/hairs' },
+  { label: 'Gift', href: '/category/gift' },
 ];
 
 export const topBarLinks: NavItem[] = [

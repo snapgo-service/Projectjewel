@@ -119,3 +119,22 @@
 .filterBtn:hover {
   background: #222;
 }
+
+.clearBtn {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: #ce967e;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 1px;
+  border: 1px solid #ce967e;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.clearBtn:hover {
+  background: #ce967e;
+  color: #fff;
+}

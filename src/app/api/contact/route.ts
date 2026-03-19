@@ -1,5 +1,18 @@
 import { NextResponse } from 'next/server';
+import dbConnect from '@/lib/mongodb';
+import ContactMessage from '@/models/ContactMessage';
 import { contactFormSchema } from '@/lib/validations';
+
+export async function GET() {
+  try {
+    await dbConnect();
+    const messages = await ContactMessage.find({}).sort({ date: -1 }).select('-_id -__v').lean();
+    return NextResponse.json(messages);
+  } catch (error) {
+    console.error('Fetch contact messages error:', error);
+    return NextResponse.json([], { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
   try {
@@ -11,28 +24,55 @@ export async function POST(req: Request) {
 
     const { name, email, subject, message } = parsed.data;
 
+    // Save to database
+    await dbConnect();
+    const contactMessage = await ContactMessage.create({
+      id: `msg-${Date.now()}`,
+      name,
+      email,
+      subject: subject || '',
+      message,
+      status: 'unread',
+      date: new Date().toISOString(),
+    });
+
     // Try sending via Resend if API key is configured
     if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_your_resend_api_key') {
-      const { Resend } = await import('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
+      try {
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
-      await resend.emails.send({
-        from: 'Stellora Silver Contact <onboarding@resend.dev>',
-        to: 'info@jubilee.com',
-        subject: subject || `Contact from ${name}`,
-        html: `
-          <h2>New Contact Message</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Subject:</strong> ${subject || 'N/A'}</p>
-          <p><strong>Message:</strong></p>
-          <p>${message}</p>
-        `,
-      });
+        await resend.emails.send({
+          from: 'Stellora Silver Contact <onboarding@resend.dev>',
+          to: 'info@jubilee.com',
+          subject: subject || `Contact from ${name}`,
+          html: `
+            <h2>New Contact Message</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Subject:</strong> ${subject || 'N/A'}</p>
+            <p><strong>Message:</strong></p>
+            <p>${message}</p>
+          `,
+        });
+      } catch {
+        // Email sending failed but message is saved
+      }
     }
 
-    // Always return success (contact form submitted)
-    return NextResponse.json({ success: true, message: 'Message sent successfully' });
+    return NextResponse.json({
+      success: true,
+      message: 'Message sent successfully',
+      data: {
+        id: contactMessage.id,
+        name: contactMessage.name,
+        email: contactMessage.email,
+        subject: contactMessage.subject,
+        message: contactMessage.message,
+        status: contactMessage.status,
+        date: contactMessage.date,
+      },
+    });
   } catch (error) {
     console.error('Contact form error:', error);
     return NextResponse.json({ error: 'Failed to send message' }, { status: 500 });

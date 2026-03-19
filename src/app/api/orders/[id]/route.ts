@@ -26,13 +26,35 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
-    if (!session || session.user.role !== 'admin') {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
     await dbConnect();
     const body = await req.json();
+
+    // Non-admin users can only cancel their own orders
+    if (session.user.role !== 'admin') {
+      const order = await Order.findOne({ id });
+      if (!order) {
+        return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      }
+      if (order.userId !== session.user.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      if (body.status !== 'cancelled') {
+        return NextResponse.json({ error: 'You can only cancel orders' }, { status: 403 });
+      }
+      if (order.status === 'shipped' || order.status === 'delivered') {
+        return NextResponse.json({ error: 'Cannot cancel a shipped or delivered order' }, { status: 400 });
+      }
+      order.status = 'cancelled';
+      await order.save();
+      return NextResponse.json(order);
+    }
+
+    // Admin can update anything
     const order = await Order.findOneAndUpdate({ id }, body, { new: true });
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });

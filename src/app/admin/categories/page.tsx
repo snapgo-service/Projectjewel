@@ -3,17 +3,8 @@
 import { useState } from 'react';
 import styles from '../admin.module.css';
 import { useAdmin } from '@/store/AdminContext';
+import { Category, CategorySlug } from '@/types';
 import ImageUpload from '@/components/admin/ImageUpload';
-
-type CategorySlug = 'rings' | 'anklets' | 'bracelets' | 'earrings' | 'brooches' | 'necklaces' | 'pendants';
-
-interface Category {
-  slug: CategorySlug;
-  name: string;
-  description: string;
-  image: string;
-  productCount: number;
-}
 
 const emptyForm = {
   name: '',

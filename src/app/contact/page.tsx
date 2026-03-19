@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useAdmin } from '@/store/AdminContext';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 
 export default function ContactPage() {
+  const { settings } = useAdmin();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -33,6 +35,13 @@ export default function ContactPage() {
       setLoading(false);
     }
   };
+
+  const contactInfo = [
+    { icon: '📍', title: 'Address', text: settings.contactAddress },
+    { icon: '📞', title: 'Phone', text: settings.contactPhone },
+    { icon: '✉️', title: 'Email', text: settings.contactEmail },
+    { icon: '🕐', title: 'Hours', text: 'Mon - Sat: 10AM - 8PM | Sun: 11AM - 6PM' },
+  ];
 
   return (
     <>
@@ -90,12 +99,7 @@ export default function ContactPage() {
               <div style={{ marginBottom: 30 }}>
                 <h3 style={{ fontSize: 20, fontWeight: 500, color: '#222', marginBottom: 15 }}>Get in Touch</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                  {[
-                    { icon: '📍', title: 'Address', text: '123 Jewelry Lane, Diamond District, NY 10036' },
-                    { icon: '📞', title: 'Phone', text: '+1 (555) 123-4567' },
-                    { icon: '✉️', title: 'Email', text: 'info@jubilee.com' },
-                    { icon: '🕐', title: 'Hours', text: 'Mon - Sat: 10AM - 8PM | Sun: 11AM - 6PM' },
-                  ].map((item) => (
+                  {contactInfo.map((item) => (
                     <div key={item.title} style={{ display: 'flex', gap: 15 }}>
                       <span style={{ fontSize: 24 }}>{item.icon}</span>
                       <div>
