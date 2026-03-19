@@ -34,7 +34,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     await dbConnect();
     const body = await req.json();
 
-    // Non-admin users can only cancel their own orders
+    // Non-admin users can cancel or request return/exchange
     if (session.user.role !== 'admin') {
       const order = await Order.findOne({ id });
       if (!order) {
@@ -43,15 +43,29 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       if (order.userId !== session.user.id) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
-      if (body.status !== 'cancelled') {
-        return NextResponse.json({ error: 'You can only cancel orders' }, { status: 403 });
+
+      // Cancel: only for pending/processing orders
+      if (body.status === 'cancelled') {
+        if (order.status === 'shipped' || order.status === 'delivered' || order.status === 'return_requested' || order.status === 'returned') {
+          return NextResponse.json({ error: 'Cannot cancel this order' }, { status: 400 });
+        }
+        order.status = 'cancelled';
+        await order.save();
+        return NextResponse.json(order);
       }
-      if (order.status === 'shipped' || order.status === 'delivered') {
-        return NextResponse.json({ error: 'Cannot cancel a shipped or delivered order' }, { status: 400 });
+
+      // Return/Exchange: only for delivered orders
+      if (body.status === 'return_requested') {
+        if (order.status !== 'delivered') {
+          return NextResponse.json({ error: 'Return/Exchange can only be requested for delivered orders' }, { status: 400 });
+        }
+        order.status = 'return_requested';
+        if (body.returnReason) order.set('returnReason', body.returnReason);
+        await order.save();
+        return NextResponse.json(order);
       }
-      order.status = 'cancelled';
-      await order.save();
-      return NextResponse.json(order);
+
+      return NextResponse.json({ error: 'Invalid action' }, { status: 403 });
     }
 
     // Admin can update anything

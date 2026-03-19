@@ -44,9 +44,10 @@ export interface Order {
   address: string;
   items: { productId: string; productName: string; quantity: number; price: number }[];
   total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'return_requested' | 'returned';
   paymentMethod?: string;
   paymentId?: string;
+  returnReason?: string;
   date: string;
 }
 

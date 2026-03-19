@@ -9,9 +9,10 @@ export interface IOrder extends Document {
   address: string;
   items: { productId: string; productName: string; quantity: number; price: number }[];
   total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'return_requested' | 'returned';
   paymentMethod: string;
   paymentId?: string;
+  returnReason?: string;
   date: string;
 }
 
@@ -29,9 +30,10 @@ const OrderSchema = new Schema<IOrder>({
     price: Number,
   }],
   total: { type: Number, required: true },
-  status: { type: String, enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'return_requested', 'returned'], default: 'pending' },
   paymentMethod: { type: String, default: 'cod' },
   paymentId: String,
+  returnReason: { type: String, default: '' },
   date: { type: String, default: () => new Date().toISOString().split('T')[0] },
 }, { timestamps: true });
 

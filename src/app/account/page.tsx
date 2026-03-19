@@ -35,6 +35,8 @@ function AccountContent() {
   const [orders, setOrders] = useState<UserOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [returnModal, setReturnModal] = useState<string | null>(null);
+  const [returnReason, setReturnReason] = useState('');
 
   // Address state
   const [address, setAddress] = useState({
@@ -255,15 +257,15 @@ function AccountContent() {
                               <td style={{ padding: '12px 10px' }}>
                                 <span style={{
                                   display: 'inline-block', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500, textTransform: 'capitalize',
-                                  background: order.status === 'delivered' ? '#e8f5e9' : order.status === 'processing' ? '#fff3e0' : order.status === 'shipped' ? '#e3f2fd' : order.status === 'cancelled' ? '#ffebee' : '#f5f5f5',
-                                  color: order.status === 'delivered' ? '#2e7d32' : order.status === 'processing' ? '#e65100' : order.status === 'shipped' ? '#1565c0' : order.status === 'cancelled' ? '#c62828' : '#666',
+                                  background: order.status === 'delivered' ? '#e8f5e9' : order.status === 'processing' ? '#fff3e0' : order.status === 'shipped' ? '#e3f2fd' : order.status === 'cancelled' ? '#ffebee' : order.status === 'return_requested' ? '#fff3e0' : order.status === 'returned' ? '#e3f2fd' : '#f5f5f5',
+                                  color: order.status === 'delivered' ? '#2e7d32' : order.status === 'processing' ? '#e65100' : order.status === 'shipped' ? '#1565c0' : order.status === 'cancelled' ? '#c62828' : order.status === 'return_requested' ? '#e65100' : order.status === 'returned' ? '#1565c0' : '#666',
                                 }}>
-                                  {order.status}
+                                  {order.status === 'return_requested' ? 'Return Requested' : order.status}
                                 </span>
                               </td>
                               <td style={{ padding: '12px 10px', fontSize: 14, color: '#222', fontWeight: 500 }}>₹{order.total}</td>
                               <td style={{ padding: '12px 10px' }}>
-                                {(order.status === 'pending' || order.status === 'processing') ? (
+                                {(order.status === 'pending' || order.status === 'processing') && (
                                   <button
                                     onClick={async () => {
                                       if (!confirm('Are you sure you want to cancel this order?')) return;
@@ -284,7 +286,23 @@ function AccountContent() {
                                   >
                                     Cancel
                                   </button>
-                                ) : (
+                                )}
+                                {order.status === 'delivered' && (
+                                  <button
+                                    onClick={() => { setReturnModal(order.id); setReturnReason(''); }}
+                                    style={{
+                                      padding: '5px 14px', fontSize: 12, background: 'none',
+                                      border: '1px solid #e65100', color: '#e65100', borderRadius: 4,
+                                      cursor: 'pointer', fontFamily: 'var(--font-primary)',
+                                    }}
+                                  >
+                                    Return / Exchange
+                                  </button>
+                                )}
+                                {order.status === 'return_requested' && (
+                                  <span style={{ fontSize: 12, color: '#e65100' }}>Return in progress</span>
+                                )}
+                                {(order.status === 'shipped' || order.status === 'cancelled' || order.status === 'returned') && (
                                   <span style={{ fontSize: 12, color: '#999' }}>—</span>
                                 )}
                               </td>
@@ -347,6 +365,61 @@ function AccountContent() {
                           ))}
                         </tbody>
                       </table>
+                    )}
+
+                    {/* Return/Exchange Modal */}
+                    {returnModal && (
+                      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setReturnModal(null)}>
+                        <div style={{ background: '#fff', borderRadius: 8, padding: 30, maxWidth: 500, width: '90%' }} onClick={e => e.stopPropagation()}>
+                          <h3 style={{ fontSize: 18, fontWeight: 500, color: '#222', marginBottom: 5 }}>Return / Exchange Request</h3>
+                          <p style={{ fontSize: 13, color: '#999', marginBottom: 20 }}>Order: {returnModal}</p>
+
+                          <div style={{ background: '#fff3e0', padding: 12, borderRadius: 6, marginBottom: 20, fontSize: 13, color: '#e65100', lineHeight: 1.6 }}>
+                            <strong>Exchange Policy:</strong> You can exchange the product for a different size, color, or a similar product of equal value. Returns are processed within 7 days of delivery.
+                          </div>
+
+                          <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#222', marginBottom: 6 }}>Reason for Return / Exchange *</label>
+                          <select
+                            value={returnReason}
+                            onChange={e => setReturnReason(e.target.value)}
+                            style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: 4, fontSize: 14, fontFamily: 'inherit', marginBottom: 20 }}
+                          >
+                            <option value="">Select a reason</option>
+                            <option value="wrong_size">Wrong Size</option>
+                            <option value="wrong_color">Wrong Color</option>
+                            <option value="defective">Defective / Damaged Product</option>
+                            <option value="not_as_described">Product Not As Described</option>
+                            <option value="exchange_other">Want to Exchange for Another Product</option>
+                            <option value="other">Other</option>
+                          </select>
+
+                          <div style={{ display: 'flex', gap: 10 }}>
+                            <button
+                              onClick={async () => {
+                                if (!returnReason) { alert('Please select a reason'); return; }
+                                const res = await fetch(`/api/orders/${returnModal}`, {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ status: 'return_requested', returnReason }),
+                                });
+                                if (res.ok) {
+                                  setOrders(orders.map(o => o.id === returnModal ? { ...o, status: 'return_requested' } : o));
+                                  setReturnModal(null);
+                                }
+                              }}
+                              style={{ padding: '10px 25px', background: '#ce967e', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                            >
+                              Submit Request
+                            </button>
+                            <button
+                              onClick={() => setReturnModal(null)}
+                              style={{ padding: '10px 25px', background: '#f5f5f5', color: '#666', border: '1px solid #e5e5e5', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </>
                 )}

@@ -19,7 +19,8 @@ interface Order {
   address: string;
   items: OrderItem[];
   total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'return_requested' | 'returned';
+  returnReason?: string;
   date: string;
 }
 
@@ -29,6 +30,8 @@ const statusBadgeMap: Record<Order['status'], string> = {
   shipped: styles.badgeShipped,
   delivered: styles.badgeDelivered,
   cancelled: styles.badgeCancelled,
+  return_requested: styles.badgeProcessing,
+  returned: styles.badgeShipped,
 };
 
 export default function OrdersAdminPage() {
@@ -103,7 +106,7 @@ export default function OrdersAdminPage() {
                     <span
                       className={`${styles.badge} ${statusBadgeMap[order.status]}`}
                     >
-                      {order.status}
+                      {order.status === 'return_requested' ? 'Return Requested' : order.status}
                     </span>
                   </td>
                   <td>{order.date}</td>
@@ -182,6 +185,20 @@ export default function OrdersAdminPage() {
                 </div>
               </div>
 
+              {selectedOrder.returnReason && (
+                <div style={{ background: '#fff3e0', padding: '12px 15px', borderRadius: 6, marginBottom: 15, fontSize: 14 }}>
+                  <strong style={{ color: '#e65100' }}>Return/Exchange Reason:</strong>{' '}
+                  <span style={{ color: '#333' }}>
+                    {selectedOrder.returnReason === 'wrong_size' ? 'Wrong Size' :
+                     selectedOrder.returnReason === 'wrong_color' ? 'Wrong Color' :
+                     selectedOrder.returnReason === 'defective' ? 'Defective / Damaged Product' :
+                     selectedOrder.returnReason === 'not_as_described' ? 'Product Not As Described' :
+                     selectedOrder.returnReason === 'exchange_other' ? 'Want to Exchange for Another Product' :
+                     selectedOrder.returnReason}
+                  </span>
+                </div>
+              )}
+
               <h3 className={styles.itemsHeading}>Items</h3>
               <table className={styles.table}>
                 <thead>
@@ -223,6 +240,8 @@ export default function OrdersAdminPage() {
                     <option value="shipped">Shipped</option>
                     <option value="delivered">Delivered</option>
                     <option value="cancelled">Cancelled</option>
+                    <option value="return_requested">Return Requested</option>
+                    <option value="returned">Returned</option>
                   </select>
                 </div>
               </div>
