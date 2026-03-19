@@ -87,7 +87,14 @@ export default function OrdersAdminPage() {
             <tbody>
               {orders.map((order: Order) => (
                 <tr key={order.id}>
-                  <td>{order.id}</td>
+                  <td>
+                    <button
+                      onClick={() => openModal(order)}
+                      style={{ background: 'none', border: 'none', color: '#ce967e', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline', fontFamily: 'inherit', fontSize: 'inherit' }}
+                    >
+                      {order.id}
+                    </button>
+                  </td>
                   <td>{order.customerName}</td>
                   <td>{order.email}</td>
                   <td>{order.items.length}</td>
@@ -198,7 +205,7 @@ export default function OrdersAdminPage() {
               </table>
 
               <div className={styles.totalAmount}>
-                Total: ${selectedOrder.total.toFixed(2)}
+                Total: ₹{selectedOrder.total.toFixed(2)}
               </div>
 
               <div className={`${styles.formGrid} ${styles.statusSection}`}>

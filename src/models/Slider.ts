@@ -11,6 +11,11 @@ export interface ISlider extends Document {
   productImage: string;
   isActive: boolean;
   order: number;
+  titleColor?: string;
+  subtitleColor?: string;
+  descriptionColor?: string;
+  buttonBgColor?: string;
+  buttonTextColor?: string;
 }
 
 const SliderSchema = new Schema<ISlider>({
@@ -24,6 +29,11 @@ const SliderSchema = new Schema<ISlider>({
   productImage: { type: String, default: '' },
   isActive: { type: Boolean, default: true },
   order: { type: Number, default: 0 },
+  titleColor: { type: String, default: '' },
+  subtitleColor: { type: String, default: '' },
+  descriptionColor: { type: String, default: '' },
+  buttonBgColor: { type: String, default: '' },
+  buttonTextColor: { type: String, default: '' },
 }, { timestamps: true });
 
 export default mongoose.models.Slider || mongoose.model<ISlider>('Slider', SliderSchema);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import Breadcrumb from '@/components/layout/Breadcrumb';
@@ -12,7 +12,12 @@ interface UserOrder {
   date: string;
   total: number;
   status: string;
-  items: { productName: string; quantity: number; price: number }[];
+  customerName: string;
+  email: string;
+  phone: string;
+  address: string;
+  paymentMethod?: string;
+  items: { productId: string; productName: string; quantity: number; price: number }[];
 }
 
 function AccountContent() {
@@ -29,6 +34,7 @@ function AccountContent() {
   const [activeTab, setActiveTab] = useState<AccountTab>('dashboard');
   const [orders, setOrders] = useState<UserOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
   // Address state
   const [address, setAddress] = useState({
@@ -235,8 +241,16 @@ function AccountContent() {
                         </thead>
                         <tbody>
                           {orders.map((order) => (
-                            <tr key={order.id} style={{ borderBottom: '1px solid #e5e5e5' }}>
-                              <td style={{ padding: '12px 10px', fontSize: 14, color: '#ce967e', fontWeight: 500 }}>{order.id}</td>
+                            <React.Fragment key={order.id}>
+                            <tr style={{ borderBottom: expandedOrder === order.id ? 'none' : '1px solid #e5e5e5' }}>
+                              <td style={{ padding: '12px 10px', fontSize: 14, fontWeight: 500 }}>
+                                <button
+                                  onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+                                  style={{ background: 'none', border: 'none', color: '#ce967e', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline', fontFamily: 'inherit', fontSize: 'inherit' }}
+                                >
+                                  {order.id}
+                                </button>
+                              </td>
                               <td style={{ padding: '12px 10px', fontSize: 14, color: '#666' }}>{order.date}</td>
                               <td style={{ padding: '12px 10px' }}>
                                 <span style={{
@@ -275,6 +289,61 @@ function AccountContent() {
                                 )}
                               </td>
                             </tr>
+                            {expandedOrder === order.id && (
+                              <tr style={{ borderBottom: '1px solid #e5e5e5' }}>
+                                <td colSpan={5} style={{ padding: '0 10px 20px' }}>
+                                  <div style={{ background: '#f9f9f9', borderRadius: 8, padding: 20, marginTop: 5 }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 20 }}>
+                                      <div>
+                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Customer</div>
+                                        <div style={{ fontSize: 14, color: '#222' }}>{order.customerName}</div>
+                                      </div>
+                                      <div>
+                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Email</div>
+                                        <div style={{ fontSize: 14, color: '#222' }}>{order.email}</div>
+                                      </div>
+                                      <div>
+                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Phone</div>
+                                        <div style={{ fontSize: 14, color: '#222' }}>{order.phone || '—'}</div>
+                                      </div>
+                                      <div>
+                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Payment</div>
+                                        <div style={{ fontSize: 14, color: '#222', textTransform: 'uppercase' }}>{order.paymentMethod || 'COD'}</div>
+                                      </div>
+                                      <div style={{ gridColumn: '1 / -1' }}>
+                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Shipping Address</div>
+                                        <div style={{ fontSize: 14, color: '#222' }}>{order.address}</div>
+                                      </div>
+                                    </div>
+                                    <div style={{ fontSize: 13, fontWeight: 500, color: '#222', marginBottom: 10 }}>Items</div>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                      <thead>
+                                        <tr style={{ borderBottom: '1px solid #e5e5e5' }}>
+                                          <th style={{ padding: '8px 10px', fontSize: 12, color: '#999', textAlign: 'left', fontWeight: 500 }}>Product</th>
+                                          <th style={{ padding: '8px 10px', fontSize: 12, color: '#999', textAlign: 'center', fontWeight: 500 }}>Qty</th>
+                                          <th style={{ padding: '8px 10px', fontSize: 12, color: '#999', textAlign: 'right', fontWeight: 500 }}>Price</th>
+                                          <th style={{ padding: '8px 10px', fontSize: 12, color: '#999', textAlign: 'right', fontWeight: 500 }}>Subtotal</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {order.items.map((item, idx) => (
+                                          <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
+                                            <td style={{ padding: '8px 10px', fontSize: 14, color: '#222' }}>{item.productName}</td>
+                                            <td style={{ padding: '8px 10px', fontSize: 14, color: '#666', textAlign: 'center' }}>{item.quantity}</td>
+                                            <td style={{ padding: '8px 10px', fontSize: 14, color: '#666', textAlign: 'right' }}>₹{item.price}</td>
+                                            <td style={{ padding: '8px 10px', fontSize: 14, color: '#222', fontWeight: 500, textAlign: 'right' }}>₹{item.quantity * item.price}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                    <div style={{ textAlign: 'right', marginTop: 12, fontSize: 16, fontWeight: 600, color: '#222' }}>
+                                      Total: ₹{order.total}
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                            </React.Fragment>
                           ))}
                         </tbody>
                       </table>
