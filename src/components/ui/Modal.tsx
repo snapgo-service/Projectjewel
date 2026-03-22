@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import styles from "./Modal.module.css";
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,6 +9,12 @@ interface ModalProps {
   children: React.ReactNode;
   size?: "sm" | "md" | "lg";
 }
+
+const sizeClasses = {
+  sm: "max-w-md",
+  md: "max-w-2xl",
+  lg: "max-w-4xl",
+};
 
 export default function Modal({
   isOpen,
@@ -45,14 +50,14 @@ export default function Modal({
 
   return createPortal(
     <div
-      className={styles.overlay}
+      className="fixed inset-0 bg-heading/40 backdrop-blur-sm z-[300] flex items-center justify-center p-4 animate-fade-in"
       ref={overlayRef}
       onClick={handleOverlayClick}
     >
-      <div className={`${styles.content} ${styles[size]}`}>
+      <div className={`bg-white rounded-2xl shadow-card-hover w-full ${sizeClasses[size]} relative animate-scale-in max-h-[90vh] overflow-y-auto`}>
         <button
           type="button"
-          className={styles.closeBtn}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-body hover:text-heading text-xl transition-colors z-10"
           onClick={onClose}
           aria-label="Close modal"
         >

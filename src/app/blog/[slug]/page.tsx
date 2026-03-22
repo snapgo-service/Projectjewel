@@ -13,10 +13,10 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
 
   if (!post) {
     return (
-      <div style={{ textAlign: 'center', padding: '100px 15px' }}>
-        <h1>Post Not Found</h1>
-        <p style={{ color: '#666', marginTop: 10 }}>The blog post you&apos;re looking for doesn&apos;t exist.</p>
-        <Link href="/blog" style={{ color: '#ce967e', marginTop: 15, display: 'inline-block' }}>← Back to Blog</Link>
+      <div className="text-center py-24 px-4">
+        <h1 className="text-heading text-2xl font-medium">Post Not Found</h1>
+        <p className="text-body mt-3">The blog post you&apos;re looking for doesn&apos;t exist.</p>
+        <Link href="/blog" className="text-primary mt-4 inline-block font-medium hover:text-primary-hover transition-colors">← Back to Blog</Link>
       </div>
     );
   }
@@ -24,41 +24,41 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
   return (
     <>
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Blog', href: '/blog' }, { label: post.title }]} />
-      <div style={{ padding: '60px 0' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 15px' }}>
-          <div style={{ marginBottom: 30 }}>
-            <div style={{ display: 'flex', gap: 15, fontSize: 13, color: '#999', marginBottom: 15 }}>
+      <div className="py-16">
+        <div className="max-w-3xl mx-auto px-4">
+          <div className="mb-8">
+            <div className="flex gap-3 text-xs text-body-light mb-4">
               <span>{post.date}</span>
               <span>|</span>
               <span>{post.category}</span>
               <span>|</span>
               <span>By {post.author}</span>
             </div>
-            <h1 style={{ fontSize: 32, fontWeight: 500, color: '#222', lineHeight: 1.3, marginBottom: 20 }}>
+            <h1 className="text-3xl font-medium text-heading leading-tight mb-5 font-[family-name:var(--font-serif)]">
               {post.title}
             </h1>
           </div>
 
-          <div style={{ position: 'relative', aspectRatio: '16/9', marginBottom: 30, borderRadius: 8, overflow: 'hidden' }}>
-            <Image src={post.image} alt={post.title} fill sizes="800px" style={{ objectFit: 'cover' }} priority />
+          <div className="relative aspect-video mb-8 rounded-2xl overflow-hidden">
+            <Image src={post.image} alt={post.title} fill sizes="800px" className="object-cover" priority />
           </div>
 
           <div
-            style={{ color: '#666', lineHeight: 1.8, fontSize: 16 }}
+            className="text-body leading-relaxed text-base prose prose-headings:text-heading prose-a:text-primary max-w-none"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
-          <div style={{ marginTop: 40, paddingTop: 30, borderTop: '1px solid #e5e5e5', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 500, color: '#222' }}>Tags:</span>
+          <div className="mt-10 pt-8 border-t border-border flex gap-2.5 flex-wrap">
+            <span className="font-medium text-heading">Tags:</span>
             {post.tags.map((tag) => (
-              <span key={tag} style={{ padding: '4px 12px', background: '#f7f7f7', fontSize: 13, color: '#666' }}>
+              <span key={tag} className="px-3 py-1 bg-bg-ivory text-body text-xs rounded-full">
                 {tag}
               </span>
             ))}
           </div>
 
-          <div style={{ marginTop: 30 }}>
-            <Link href="/blog" style={{ color: '#ce967e', fontWeight: 500 }}>← Back to Blog</Link>
+          <div className="mt-8">
+            <Link href="/blog" className="text-primary font-medium hover:text-primary-hover transition-colors">← Back to Blog</Link>
           </div>
         </div>
       </div>

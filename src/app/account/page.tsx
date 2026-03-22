@@ -38,106 +38,49 @@ function AccountContent() {
   const [returnModal, setReturnModal] = useState<string | null>(null);
   const [returnReason, setReturnReason] = useState('');
 
-  // Address state
-  const [address, setAddress] = useState({
-    street: '', city: '', state: '', zip: '', country: 'IN', phone: '',
-  });
+  const [address, setAddress] = useState({ street: '', city: '', state: '', zip: '', country: 'IN', phone: '' });
   const [addressSaved, setAddressSaved] = useState(false);
-
-  // Account details state
   const [detailsName, setDetailsName] = useState('');
   const [detailsEmail, setDetailsEmail] = useState('');
   const [detailsSaved, setDetailsSaved] = useState(false);
 
-  useEffect(() => {
-    if (session?.user) {
-      setDetailsName(session.user.name || '');
-      setDetailsEmail(session.user.email || '');
-    }
-  }, [session]);
-
-  // Load saved address from localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('jubilee-address');
-      if (saved) {
-        try { setAddress(JSON.parse(saved)); } catch { /* ignore */ }
-      }
-    }
-  }, []);
-
-  // Fetch orders when tab changes to orders
+  useEffect(() => { if (session?.user) { setDetailsName(session.user.name || ''); setDetailsEmail(session.user.email || ''); } }, [session]);
+  useEffect(() => { if (typeof window !== 'undefined') { const saved = localStorage.getItem('jubilee-address'); if (saved) { try { setAddress(JSON.parse(saved)); } catch { /* ignore */ } } } }, []);
   useEffect(() => {
     if (activeTab === 'orders' && session) {
       setOrdersLoading(true);
-      fetch('/api/orders')
-        .then(res => res.ok ? res.json() : [])
-        .then(data => {
-          setOrders(Array.isArray(data) ? data : []);
-        })
-        .catch(() => setOrders([]))
-        .finally(() => setOrdersLoading(false));
+      fetch('/api/orders').then(res => res.ok ? res.json() : []).then(data => setOrders(Array.isArray(data) ? data : [])).catch(() => setOrders([])).finally(() => setOrdersLoading(false));
     }
   }, [activeTab, session]);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+    e.preventDefault(); setError(''); setLoading(true);
     const result = await signIn('credentials', { email, password, redirect: false });
-    if (result?.error) {
-      setError('Invalid email or password');
-      setLoading(false);
-    } else {
-      window.location.href = callbackUrl;
-    }
+    if (result?.error) { setError('Invalid email or password'); setLoading(false); } else { window.location.href = callbackUrl; }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+    e.preventDefault(); setError(''); setLoading(true);
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
-      });
+      const res = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password }) });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Registration failed');
-        setLoading(false);
-        return;
-      }
+      if (!res.ok) { setError(data.error || 'Registration failed'); setLoading(false); return; }
       await signIn('credentials', { email, password, redirect: false });
       window.location.href = '/account';
-    } catch {
-      setError('Registration failed. Please try again.');
-      setLoading(false);
-    }
+    } catch { setError('Registration failed. Please try again.'); setLoading(false); }
   };
 
-  const handleSaveAddress = (e: React.FormEvent) => {
-    e.preventDefault();
-    localStorage.setItem('jubilee-address', JSON.stringify(address));
-    setAddressSaved(true);
-    setTimeout(() => setAddressSaved(false), 3000);
-  };
+  const handleSaveAddress = (e: React.FormEvent) => { e.preventDefault(); localStorage.setItem('jubilee-address', JSON.stringify(address)); setAddressSaved(true); setTimeout(() => setAddressSaved(false), 3000); };
+  const handleSaveDetails = (e: React.FormEvent) => { e.preventDefault(); setDetailsSaved(true); setTimeout(() => setDetailsSaved(false), 3000); };
 
-  const handleSaveDetails = (e: React.FormEvent) => {
-    e.preventDefault();
-    setDetailsSaved(true);
-    setTimeout(() => setDetailsSaved(false), 3000);
-  };
-
-  const inputStyle = { width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', fontSize: 14, fontFamily: 'var(--font-primary)' };
-  const labelStyle = { display: 'block' as const, fontSize: 14, fontWeight: 500, color: '#222', marginBottom: 6 };
+  const inputCls = "w-full px-4 py-3 rounded-lg border border-border text-sm text-heading focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all";
+  const labelCls = "block text-sm font-medium text-heading mb-1.5";
 
   if (status === 'loading') {
     return (
       <>
         <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'My Account' }]} />
-        <div style={{ textAlign: 'center', padding: '80px 15px', color: '#666' }}>Loading...</div>
+        <div className="text-center py-20 text-body">Loading...</div>
       </>
     );
   }
@@ -150,35 +93,42 @@ function AccountContent() {
       { key: 'details', label: 'Account Details' },
     ];
 
+    const statusColors: Record<string, string> = {
+      delivered: 'bg-green-50 text-green-700',
+      processing: 'bg-amber-50 text-amber-700',
+      shipped: 'bg-blue-50 text-blue-700',
+      cancelled: 'bg-red-50 text-red-700',
+      return_requested: 'bg-amber-50 text-amber-700',
+      returned: 'bg-blue-50 text-blue-700',
+      pending: 'bg-gray-100 text-gray-600',
+    };
+
     return (
       <>
         <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'My Account' }]} />
-        <div style={{ padding: '60px 0' }}>
-          <div style={{ maxWidth: 1430, margin: '0 auto', padding: '0 15px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: 40 }}>
+        <div className="py-12 md:py-16">
+          <div className="max-w-[1430px] mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-10">
               {/* Sidebar */}
               <div>
-                <h3 style={{ fontSize: 20, fontWeight: 500, color: '#222', marginBottom: 20 }}>My Account</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <h3 className="text-xl font-medium text-heading mb-5">My Account</h3>
+                <div className="flex flex-col gap-2">
                   {tabs.map((tab) => (
                     <button
                       key={tab.key}
                       onClick={() => setActiveTab(tab.key)}
-                      style={{
-                        textAlign: 'left', padding: '10px 15px',
-                        background: activeTab === tab.key ? '#ce967e' : 'none',
-                        border: '1px solid #e5e5e5', fontSize: 14,
-                        color: activeTab === tab.key ? '#fff' : '#666',
-                        cursor: 'pointer', transition: 'all 0.3s',
-                        fontFamily: 'var(--font-primary)', fontWeight: activeTab === tab.key ? 500 : 400,
-                      }}
+                      className={`text-left px-4 py-3 rounded-lg text-sm transition-all duration-300 ${
+                        activeTab === tab.key
+                          ? 'bg-primary text-white font-medium'
+                          : 'text-body hover:bg-bg-blush hover:text-primary'
+                      }`}
                     >
                       {tab.label}
                     </button>
                   ))}
                   <button
                     onClick={() => signOut({ callbackUrl: '/' })}
-                    style={{ textAlign: 'left', padding: '10px 15px', background: 'none', border: '1px solid #e5e5e5', fontSize: 14, color: '#f44336', cursor: 'pointer', fontFamily: 'var(--font-primary)' }}
+                    className="text-left px-4 py-3 rounded-lg text-sm text-error hover:bg-red-50 transition-all duration-300"
                   >
                     Logout
                   </button>
@@ -189,32 +139,31 @@ function AccountContent() {
               <div>
                 {activeTab === 'dashboard' && (
                   <>
-                    <h2 style={{ fontSize: 24, fontWeight: 500, color: '#222', marginBottom: 15 }}>Dashboard</h2>
-                    <p style={{ color: '#666', lineHeight: 1.8, marginBottom: 30 }}>
-                      Welcome back, <strong>{session.user?.name || session.user?.email}</strong>! From your account dashboard you can view your recent orders,
-                      manage your shipping and billing addresses, and edit your account details.
+                    <h2 className="text-2xl font-medium text-heading mb-4">Dashboard</h2>
+                    <p className="text-body leading-relaxed mb-8">
+                      Welcome back, <strong className="text-heading">{session.user?.name || session.user?.email}</strong>! From your account dashboard you can view your recent orders, manage your shipping addresses, and edit your account details.
                     </p>
                     {session.user?.role === 'admin' && (
-                      <div style={{ background: '#fff3e0', padding: '15px 20px', borderRadius: 8, marginBottom: 20, border: '1px solid #ffe0b2' }}>
-                        <strong>Admin Account</strong> — <a href="/admin" style={{ color: '#ce967e', textDecoration: 'underline' }}>Go to Admin Panel</a>
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                        <strong>Admin Account</strong> — <a href="/admin" className="text-primary underline">Go to Admin Panel</a>
                       </div>
                     )}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                      <div onClick={() => setActiveTab('orders')} style={{ background: '#f7f7f7', padding: 25, borderRadius: 8, cursor: 'pointer', transition: 'all 0.3s', border: '1px solid transparent' }}>
-                        <h4 style={{ fontSize: 16, color: '#222', marginBottom: 8 }}>My Orders</h4>
-                        <p style={{ color: '#666', fontSize: 14 }}>View and track your orders</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div onClick={() => setActiveTab('orders')} className="bg-white rounded-xl p-6 shadow-card cursor-pointer hover:shadow-card-hover transition-all duration-300">
+                        <h4 className="text-heading font-medium mb-1">My Orders</h4>
+                        <p className="text-body text-sm">View and track your orders</p>
                       </div>
-                      <div onClick={() => setActiveTab('addresses')} style={{ background: '#f7f7f7', padding: 25, borderRadius: 8, cursor: 'pointer', transition: 'all 0.3s', border: '1px solid transparent' }}>
-                        <h4 style={{ fontSize: 16, color: '#222', marginBottom: 8 }}>Addresses</h4>
-                        <p style={{ color: '#666', fontSize: 14 }}>Manage your shipping address</p>
+                      <div onClick={() => setActiveTab('addresses')} className="bg-white rounded-xl p-6 shadow-card cursor-pointer hover:shadow-card-hover transition-all duration-300">
+                        <h4 className="text-heading font-medium mb-1">Addresses</h4>
+                        <p className="text-body text-sm">Manage your shipping address</p>
                       </div>
-                      <div onClick={() => setActiveTab('details')} style={{ background: '#f7f7f7', padding: 25, borderRadius: 8, cursor: 'pointer', transition: 'all 0.3s', border: '1px solid transparent' }}>
-                        <h4 style={{ fontSize: 16, color: '#222', marginBottom: 8 }}>Account Details</h4>
-                        <p style={{ color: '#666', fontSize: 14 }}>Edit your name and email</p>
+                      <div onClick={() => setActiveTab('details')} className="bg-white rounded-xl p-6 shadow-card cursor-pointer hover:shadow-card-hover transition-all duration-300">
+                        <h4 className="text-heading font-medium mb-1">Account Details</h4>
+                        <p className="text-body text-sm">Edit your name and email</p>
                       </div>
-                      <div onClick={() => signOut({ callbackUrl: '/' })} style={{ background: '#fff5f5', padding: 25, borderRadius: 8, cursor: 'pointer', transition: 'all 0.3s', border: '1px solid transparent' }}>
-                        <h4 style={{ fontSize: 16, color: '#f44336', marginBottom: 8 }}>Logout</h4>
-                        <p style={{ color: '#666', fontSize: 14 }}>Sign out of your account</p>
+                      <div onClick={() => signOut({ callbackUrl: '/' })} className="bg-red-50 rounded-xl p-6 cursor-pointer hover:bg-red-100 transition-all duration-300">
+                        <h4 className="text-error font-medium mb-1">Logout</h4>
+                        <p className="text-body text-sm">Sign out of your account</p>
                       </div>
                     </div>
                   </>
@@ -222,168 +171,93 @@ function AccountContent() {
 
                 {activeTab === 'orders' && (
                   <>
-                    <h2 style={{ fontSize: 24, fontWeight: 500, color: '#222', marginBottom: 20 }}>My Orders</h2>
+                    <h2 className="text-2xl font-medium text-heading mb-5">My Orders</h2>
                     {ordersLoading ? (
-                      <div style={{ textAlign: 'center', padding: 40, color: '#666' }}>Loading orders...</div>
+                      <div className="text-center py-10 text-body">Loading orders...</div>
                     ) : orders.length === 0 ? (
-                      <div style={{ background: '#f7f7f7', padding: 40, textAlign: 'center', color: '#666', borderRadius: 8 }}>
-                        <p style={{ fontSize: 16, marginBottom: 10 }}>No orders yet.</p>
-                        <a href="/shop" style={{ color: '#ce967e', textDecoration: 'underline' }}>Start shopping</a>
+                      <div className="bg-white rounded-xl p-10 text-center shadow-card">
+                        <p className="text-body mb-3">No orders yet.</p>
+                        <a href="/shop" className="text-primary underline font-medium">Start shopping</a>
                       </div>
                     ) : (
-                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                          <tr style={{ borderBottom: '2px solid #e5e5e5', textAlign: 'left' }}>
-                            <th style={{ padding: '12px 10px', fontSize: 14, color: '#222' }}>Order</th>
-                            <th style={{ padding: '12px 10px', fontSize: 14, color: '#222' }}>Date</th>
-                            <th style={{ padding: '12px 10px', fontSize: 14, color: '#222' }}>Status</th>
-                            <th style={{ padding: '12px 10px', fontSize: 14, color: '#222' }}>Total</th>
-                            <th style={{ padding: '12px 10px', fontSize: 14, color: '#222' }}>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {orders.map((order) => (
-                            <React.Fragment key={order.id}>
-                            <tr style={{ borderBottom: expandedOrder === order.id ? 'none' : '1px solid #e5e5e5' }}>
-                              <td style={{ padding: '12px 10px', fontSize: 14, fontWeight: 500 }}>
-                                <button
-                                  onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
-                                  style={{ background: 'none', border: 'none', color: '#ce967e', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline', fontFamily: 'inherit', fontSize: 'inherit' }}
-                                >
-                                  {order.id}
-                                </button>
-                              </td>
-                              <td style={{ padding: '12px 10px', fontSize: 14, color: '#666' }}>{order.date}</td>
-                              <td style={{ padding: '12px 10px' }}>
-                                <span style={{
-                                  display: 'inline-block', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500, textTransform: 'capitalize',
-                                  background: order.status === 'delivered' ? '#e8f5e9' : order.status === 'processing' ? '#fff3e0' : order.status === 'shipped' ? '#e3f2fd' : order.status === 'cancelled' ? '#ffebee' : order.status === 'return_requested' ? '#fff3e0' : order.status === 'returned' ? '#e3f2fd' : '#f5f5f5',
-                                  color: order.status === 'delivered' ? '#2e7d32' : order.status === 'processing' ? '#e65100' : order.status === 'shipped' ? '#1565c0' : order.status === 'cancelled' ? '#c62828' : order.status === 'return_requested' ? '#e65100' : order.status === 'returned' ? '#1565c0' : '#666',
-                                }}>
-                                  {order.status === 'return_requested' ? 'Return Requested' : order.status}
-                                </span>
-                              </td>
-                              <td style={{ padding: '12px 10px', fontSize: 14, color: '#222', fontWeight: 500 }}>₹{order.total}</td>
-                              <td style={{ padding: '12px 10px' }}>
-                                {(order.status === 'pending' || order.status === 'processing') && (
-                                  <button
-                                    onClick={async () => {
-                                      if (!confirm('Are you sure you want to cancel this order?')) return;
-                                      const res = await fetch(`/api/orders/${order.id}`, {
-                                        method: 'PUT',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ status: 'cancelled' }),
-                                      });
-                                      if (res.ok) {
-                                        setOrders(orders.map(o => o.id === order.id ? { ...o, status: 'cancelled' } : o));
-                                      }
-                                    }}
-                                    style={{
-                                      padding: '5px 14px', fontSize: 12, background: 'none',
-                                      border: '1px solid #f44336', color: '#f44336', borderRadius: 4,
-                                      cursor: 'pointer', fontFamily: 'var(--font-primary)',
-                                    }}
-                                  >
-                                    Cancel
-                                  </button>
-                                )}
-                                {order.status === 'delivered' && (
-                                  <button
-                                    onClick={() => { setReturnModal(order.id); setReturnReason(''); }}
-                                    style={{
-                                      padding: '5px 14px', fontSize: 12, background: 'none',
-                                      border: '1px solid #e65100', color: '#e65100', borderRadius: 4,
-                                      cursor: 'pointer', fontFamily: 'var(--font-primary)',
-                                    }}
-                                  >
-                                    Return / Exchange
-                                  </button>
-                                )}
-                                {order.status === 'return_requested' && (
-                                  <span style={{ fontSize: 12, color: '#e65100' }}>Return in progress</span>
-                                )}
-                                {(order.status === 'shipped' || order.status === 'cancelled' || order.status === 'returned') && (
-                                  <span style={{ fontSize: 12, color: '#999' }}>—</span>
-                                )}
-                              </td>
+                      <div className="bg-white rounded-xl shadow-card overflow-hidden">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b-2 border-border text-left">
+                              <th className="px-4 py-3 text-sm font-medium text-heading">Order</th>
+                              <th className="px-4 py-3 text-sm font-medium text-heading">Date</th>
+                              <th className="px-4 py-3 text-sm font-medium text-heading">Status</th>
+                              <th className="px-4 py-3 text-sm font-medium text-heading">Total</th>
+                              <th className="px-4 py-3 text-sm font-medium text-heading">Action</th>
                             </tr>
-                            {expandedOrder === order.id && (
-                              <tr style={{ borderBottom: '1px solid #e5e5e5' }}>
-                                <td colSpan={5} style={{ padding: '0 10px 20px' }}>
-                                  <div style={{ background: '#f9f9f9', borderRadius: 8, padding: 20, marginTop: 5 }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 20 }}>
-                                      <div>
-                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Customer</div>
-                                        <div style={{ fontSize: 14, color: '#222' }}>{order.customerName}</div>
+                          </thead>
+                          <tbody>
+                            {orders.map((order) => (
+                              <React.Fragment key={order.id}>
+                                <tr className={expandedOrder === order.id ? '' : 'border-b border-border'}>
+                                  <td className="px-4 py-3">
+                                    <button onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)} className="text-primary font-medium text-sm underline">{order.id}</button>
+                                  </td>
+                                  <td className="px-4 py-3 text-sm text-body">{order.date}</td>
+                                  <td className="px-4 py-3">
+                                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium capitalize ${statusColors[order.status] || 'bg-gray-100 text-gray-600'}`}>
+                                      {order.status === 'return_requested' ? 'Return Requested' : order.status}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3 text-sm font-medium text-heading">₹{order.total}</td>
+                                  <td className="px-4 py-3">
+                                    {(order.status === 'pending' || order.status === 'processing') && (
+                                      <button onClick={async () => { if (!confirm('Cancel this order?')) return; const res = await fetch(`/api/orders/${order.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'cancelled' }) }); if (res.ok) setOrders(orders.map(o => o.id === order.id ? { ...o, status: 'cancelled' } : o)); }} className="px-3 py-1 text-xs border border-error text-error rounded-full hover:bg-error hover:text-white transition-all">Cancel</button>
+                                    )}
+                                    {order.status === 'delivered' && (
+                                      <button onClick={() => { setReturnModal(order.id); setReturnReason(''); }} className="px-3 py-1 text-xs border border-amber-600 text-amber-600 rounded-full hover:bg-amber-600 hover:text-white transition-all">Return / Exchange</button>
+                                    )}
+                                    {order.status === 'return_requested' && <span className="text-xs text-amber-600">Return in progress</span>}
+                                    {['shipped', 'cancelled', 'returned'].includes(order.status) && <span className="text-xs text-body-light">—</span>}
+                                  </td>
+                                </tr>
+                                {expandedOrder === order.id && (
+                                  <tr className="border-b border-border">
+                                    <td colSpan={5} className="px-4 pb-4">
+                                      <div className="bg-bg-ivory rounded-xl p-5 mt-1">
+                                        <div className="grid grid-cols-2 gap-4 mb-5">
+                                          <div><div className="text-xs text-body-light mb-1">Customer</div><div className="text-sm text-heading">{order.customerName}</div></div>
+                                          <div><div className="text-xs text-body-light mb-1">Email</div><div className="text-sm text-heading">{order.email}</div></div>
+                                          <div><div className="text-xs text-body-light mb-1">Phone</div><div className="text-sm text-heading">{order.phone || '—'}</div></div>
+                                          <div><div className="text-xs text-body-light mb-1">Payment</div><div className="text-sm text-heading uppercase">{order.paymentMethod || 'COD'}</div></div>
+                                          <div className="col-span-2"><div className="text-xs text-body-light mb-1">Shipping Address</div><div className="text-sm text-heading">{order.address}</div></div>
+                                        </div>
+                                        <div className="text-sm font-medium text-heading mb-3">Items</div>
+                                        <table className="w-full">
+                                          <thead><tr className="border-b border-border"><th className="py-2 px-2 text-xs text-body-light text-left font-medium">Product</th><th className="py-2 px-2 text-xs text-body-light text-center font-medium">Qty</th><th className="py-2 px-2 text-xs text-body-light text-right font-medium">Price</th><th className="py-2 px-2 text-xs text-body-light text-right font-medium">Subtotal</th></tr></thead>
+                                          <tbody>
+                                            {order.items.map((item, idx) => (
+                                              <tr key={idx} className="border-b border-border/50"><td className="py-2 px-2 text-sm text-heading">{item.productName}</td><td className="py-2 px-2 text-sm text-body text-center">{item.quantity}</td><td className="py-2 px-2 text-sm text-body text-right">₹{item.price}</td><td className="py-2 px-2 text-sm text-heading font-medium text-right">₹{item.quantity * item.price}</td></tr>
+                                            ))}
+                                          </tbody>
+                                        </table>
+                                        <div className="text-right mt-3 text-lg font-semibold text-heading">Total: ₹{order.total}</div>
                                       </div>
-                                      <div>
-                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Email</div>
-                                        <div style={{ fontSize: 14, color: '#222' }}>{order.email}</div>
-                                      </div>
-                                      <div>
-                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Phone</div>
-                                        <div style={{ fontSize: 14, color: '#222' }}>{order.phone || '—'}</div>
-                                      </div>
-                                      <div>
-                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Payment</div>
-                                        <div style={{ fontSize: 14, color: '#222', textTransform: 'uppercase' }}>{order.paymentMethod || 'COD'}</div>
-                                      </div>
-                                      <div style={{ gridColumn: '1 / -1' }}>
-                                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Shipping Address</div>
-                                        <div style={{ fontSize: 14, color: '#222' }}>{order.address}</div>
-                                      </div>
-                                    </div>
-                                    <div style={{ fontSize: 13, fontWeight: 500, color: '#222', marginBottom: 10 }}>Items</div>
-                                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                      <thead>
-                                        <tr style={{ borderBottom: '1px solid #e5e5e5' }}>
-                                          <th style={{ padding: '8px 10px', fontSize: 12, color: '#999', textAlign: 'left', fontWeight: 500 }}>Product</th>
-                                          <th style={{ padding: '8px 10px', fontSize: 12, color: '#999', textAlign: 'center', fontWeight: 500 }}>Qty</th>
-                                          <th style={{ padding: '8px 10px', fontSize: 12, color: '#999', textAlign: 'right', fontWeight: 500 }}>Price</th>
-                                          <th style={{ padding: '8px 10px', fontSize: 12, color: '#999', textAlign: 'right', fontWeight: 500 }}>Subtotal</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {order.items.map((item, idx) => (
-                                          <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
-                                            <td style={{ padding: '8px 10px', fontSize: 14, color: '#222' }}>{item.productName}</td>
-                                            <td style={{ padding: '8px 10px', fontSize: 14, color: '#666', textAlign: 'center' }}>{item.quantity}</td>
-                                            <td style={{ padding: '8px 10px', fontSize: 14, color: '#666', textAlign: 'right' }}>₹{item.price}</td>
-                                            <td style={{ padding: '8px 10px', fontSize: 14, color: '#222', fontWeight: 500, textAlign: 'right' }}>₹{item.quantity * item.price}</td>
-                                          </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
-                                    <div style={{ textAlign: 'right', marginTop: 12, fontSize: 16, fontWeight: 600, color: '#222' }}>
-                                      Total: ₹{order.total}
-                                    </div>
-                                  </div>
-                                </td>
-                              </tr>
-                            )}
-                            </React.Fragment>
-                          ))}
-                        </tbody>
-                      </table>
+                                    </td>
+                                  </tr>
+                                )}
+                              </React.Fragment>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     )}
 
-                    {/* Return/Exchange Modal */}
                     {returnModal && (
-                      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setReturnModal(null)}>
-                        <div style={{ background: '#fff', borderRadius: 8, padding: 30, maxWidth: 500, width: '90%' }} onClick={e => e.stopPropagation()}>
-                          <h3 style={{ fontSize: 18, fontWeight: 500, color: '#222', marginBottom: 5 }}>Return / Exchange Request</h3>
-                          <p style={{ fontSize: 13, color: '#999', marginBottom: 20 }}>Order: {returnModal}</p>
-
-                          <div style={{ background: '#fff3e0', padding: 12, borderRadius: 6, marginBottom: 20, fontSize: 13, color: '#e65100', lineHeight: 1.6 }}>
+                      <div className="fixed inset-0 bg-heading/50 backdrop-blur-sm z-[200] flex items-center justify-center p-4" onClick={() => setReturnModal(null)}>
+                        <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-card-hover" onClick={e => e.stopPropagation()}>
+                          <h3 className="text-lg font-medium text-heading mb-1">Return / Exchange Request</h3>
+                          <p className="text-xs text-body-light mb-5">Order: {returnModal}</p>
+                          <div className="bg-amber-50 p-4 rounded-lg mb-5 text-sm text-amber-700 leading-relaxed">
                             <strong>Exchange Policy:</strong> You can exchange the product for a different size, color, or a similar product of equal value. Returns are processed within 7 days of delivery.
                           </div>
-
-                          <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#222', marginBottom: 6 }}>Reason for Return / Exchange *</label>
-                          <select
-                            value={returnReason}
-                            onChange={e => setReturnReason(e.target.value)}
-                            style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: 4, fontSize: 14, fontFamily: 'inherit', marginBottom: 20 }}
-                          >
+                          <label className={labelCls}>Reason for Return / Exchange *</label>
+                          <select value={returnReason} onChange={e => setReturnReason(e.target.value)} className={`${inputCls} mb-5`}>
                             <option value="">Select a reason</option>
                             <option value="wrong_size">Wrong Size</option>
                             <option value="wrong_color">Wrong Color</option>
@@ -392,31 +266,9 @@ function AccountContent() {
                             <option value="exchange_other">Want to Exchange for Another Product</option>
                             <option value="other">Other</option>
                           </select>
-
-                          <div style={{ display: 'flex', gap: 10 }}>
-                            <button
-                              onClick={async () => {
-                                if (!returnReason) { alert('Please select a reason'); return; }
-                                const res = await fetch(`/api/orders/${returnModal}`, {
-                                  method: 'PUT',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ status: 'return_requested', returnReason }),
-                                });
-                                if (res.ok) {
-                                  setOrders(orders.map(o => o.id === returnModal ? { ...o, status: 'return_requested' } : o));
-                                  setReturnModal(null);
-                                }
-                              }}
-                              style={{ padding: '10px 25px', background: '#ce967e', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
-                            >
-                              Submit Request
-                            </button>
-                            <button
-                              onClick={() => setReturnModal(null)}
-                              style={{ padding: '10px 25px', background: '#f5f5f5', color: '#666', border: '1px solid #e5e5e5', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
-                            >
-                              Cancel
-                            </button>
+                          <div className="flex gap-3">
+                            <button onClick={async () => { if (!returnReason) { alert('Please select a reason'); return; } const res = await fetch(`/api/orders/${returnModal}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'return_requested', returnReason }) }); if (res.ok) { setOrders(orders.map(o => o.id === returnModal ? { ...o, status: 'return_requested' } : o)); setReturnModal(null); } }} className="px-6 py-3 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary-hover transition-all">Submit Request</button>
+                            <button onClick={() => setReturnModal(null)} className="px-6 py-3 border border-border text-body rounded-full text-sm hover:bg-bg-blush transition-all">Cancel</button>
                           </div>
                         </div>
                       </div>
@@ -426,90 +278,45 @@ function AccountContent() {
 
                 {activeTab === 'addresses' && (
                   <>
-                    <h2 style={{ fontSize: 24, fontWeight: 500, color: '#222', marginBottom: 20 }}>Shipping Address</h2>
-                    {addressSaved && (
-                      <div style={{ background: '#e8f5e9', color: '#2e7d32', padding: '12px 15px', borderRadius: 4, marginBottom: 15, fontSize: 14 }}>
-                        Address saved successfully!
+                    <h2 className="text-2xl font-medium text-heading mb-5">Shipping Address</h2>
+                    {addressSaved && <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm">Address saved successfully!</div>}
+                    <form onSubmit={handleSaveAddress} className="max-w-xl">
+                      <div className="mb-4">
+                        <label className={labelCls}>Street Address *</label>
+                        <input type="text" required value={address.street} onChange={(e) => setAddress({ ...address, street: e.target.value })} className={inputCls} placeholder="House number and street name" />
                       </div>
-                    )}
-                    <form onSubmit={handleSaveAddress} style={{ maxWidth: 600 }}>
-                      <div style={{ marginBottom: 15 }}>
-                        <label style={labelStyle}>Street Address *</label>
-                        <input type="text" required value={address.street} onChange={(e) => setAddress({ ...address, street: e.target.value })} style={inputStyle} placeholder="House number and street name" />
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div><label className={labelCls}>City *</label><input type="text" required value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} className={inputCls} /></div>
+                        <div><label className={labelCls}>State *</label><input type="text" required value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} className={inputCls} /></div>
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 15 }}>
-                        <div>
-                          <label style={labelStyle}>City *</label>
-                          <input type="text" required value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} style={inputStyle} />
-                        </div>
-                        <div>
-                          <label style={labelStyle}>State *</label>
-                          <input type="text" required value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} style={inputStyle} />
-                        </div>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div><label className={labelCls}>ZIP Code *</label><input type="text" required value={address.zip} onChange={(e) => setAddress({ ...address, zip: e.target.value })} className={inputCls} /></div>
+                        <div><label className={labelCls}>Country *</label><select value={address.country} onChange={(e) => setAddress({ ...address, country: e.target.value })} className={inputCls}><option value="IN">India</option><option value="US">United States</option><option value="CA">Canada</option><option value="UK">United Kingdom</option><option value="AU">Australia</option></select></div>
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 15 }}>
-                        <div>
-                          <label style={labelStyle}>ZIP Code *</label>
-                          <input type="text" required value={address.zip} onChange={(e) => setAddress({ ...address, zip: e.target.value })} style={inputStyle} />
-                        </div>
-                        <div>
-                          <label style={labelStyle}>Country *</label>
-                          <select value={address.country} onChange={(e) => setAddress({ ...address, country: e.target.value })} style={inputStyle}>
-                            <option value="IN">India</option>
-                            <option value="US">United States</option>
-                            <option value="CA">Canada</option>
-                            <option value="UK">United Kingdom</option>
-                            <option value="AU">Australia</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div style={{ marginBottom: 20 }}>
-                        <label style={labelStyle}>Phone *</label>
-                        <input type="tel" required value={address.phone} onChange={(e) => setAddress({ ...address, phone: e.target.value })} style={inputStyle} />
-                      </div>
-                      <button type="submit" style={{ padding: '12px 35px', background: '#ce967e', color: '#fff', textTransform: 'uppercase', fontSize: 14, fontWeight: 500, letterSpacing: 2, border: 'none', cursor: 'pointer' }}>
-                        Save Address
-                      </button>
+                      <div className="mb-6"><label className={labelCls}>Phone *</label><input type="tel" required value={address.phone} onChange={(e) => setAddress({ ...address, phone: e.target.value })} className={inputCls} /></div>
+                      <button type="submit" className="px-8 py-3 bg-primary text-white rounded-full text-sm font-medium uppercase tracking-wider hover:bg-primary-hover transition-all">Save Address</button>
                     </form>
                   </>
                 )}
 
                 {activeTab === 'details' && (
                   <>
-                    <h2 style={{ fontSize: 24, fontWeight: 500, color: '#222', marginBottom: 20 }}>Account Details</h2>
-                    {detailsSaved && (
-                      <div style={{ background: '#e8f5e9', color: '#2e7d32', padding: '12px 15px', borderRadius: 4, marginBottom: 15, fontSize: 14 }}>
-                        Details saved successfully!
+                    <h2 className="text-2xl font-medium text-heading mb-5">Account Details</h2>
+                    {detailsSaved && <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm">Details saved successfully!</div>}
+                    <form onSubmit={handleSaveDetails} className="max-w-xl">
+                      <div className="mb-4"><label className={labelCls}>Full Name</label><input type="text" value={detailsName} onChange={(e) => setDetailsName(e.target.value)} className={inputCls} /></div>
+                      <div className="mb-4">
+                        <label className={labelCls}>Email Address</label>
+                        <input type="email" value={detailsEmail} disabled className={`${inputCls} bg-bg-ivory text-body-light`} />
+                        <p className="text-xs text-body-light mt-1">Email cannot be changed</p>
                       </div>
-                    )}
-                    <form onSubmit={handleSaveDetails} style={{ maxWidth: 600 }}>
-                      <div style={{ marginBottom: 15 }}>
-                        <label style={labelStyle}>Full Name</label>
-                        <input type="text" value={detailsName} onChange={(e) => setDetailsName(e.target.value)} style={inputStyle} />
+                      <div className="mb-6 p-5 bg-white rounded-xl shadow-card">
+                        <h4 className="text-heading font-medium mb-4">Change Password</h4>
+                        <div className="mb-3"><label className={labelCls}>Current Password</label><input type="password" className={inputCls} placeholder="Leave blank to keep current" /></div>
+                        <div className="mb-3"><label className={labelCls}>New Password</label><input type="password" className={inputCls} placeholder="Leave blank to keep current" /></div>
+                        <div><label className={labelCls}>Confirm New Password</label><input type="password" className={inputCls} placeholder="Leave blank to keep current" /></div>
                       </div>
-                      <div style={{ marginBottom: 15 }}>
-                        <label style={labelStyle}>Email Address</label>
-                        <input type="email" value={detailsEmail} disabled style={{ ...inputStyle, background: '#f5f5f5', color: '#999' }} />
-                        <p style={{ fontSize: 12, color: '#999', marginTop: 4 }}>Email cannot be changed</p>
-                      </div>
-                      <div style={{ marginBottom: 20, padding: '20px', background: '#f7f7f7', borderRadius: 8 }}>
-                        <h4 style={{ fontSize: 16, color: '#222', marginBottom: 15 }}>Change Password</h4>
-                        <div style={{ marginBottom: 12 }}>
-                          <label style={labelStyle}>Current Password</label>
-                          <input type="password" style={inputStyle} placeholder="Leave blank to keep current" />
-                        </div>
-                        <div style={{ marginBottom: 12 }}>
-                          <label style={labelStyle}>New Password</label>
-                          <input type="password" style={inputStyle} placeholder="Leave blank to keep current" />
-                        </div>
-                        <div>
-                          <label style={labelStyle}>Confirm New Password</label>
-                          <input type="password" style={inputStyle} placeholder="Leave blank to keep current" />
-                        </div>
-                      </div>
-                      <button type="submit" style={{ padding: '12px 35px', background: '#ce967e', color: '#fff', textTransform: 'uppercase', fontSize: 14, fontWeight: 500, letterSpacing: 2, border: 'none', cursor: 'pointer' }}>
-                        Save Changes
-                      </button>
+                      <button type="submit" className="px-8 py-3 bg-primary text-white rounded-full text-sm font-medium uppercase tracking-wider hover:bg-primary-hover transition-all">Save Changes</button>
                     </form>
                   </>
                 )}
@@ -521,53 +328,43 @@ function AccountContent() {
     );
   }
 
+  // Login / Register form
   return (
     <>
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'My Account' }]} />
-      <div style={{ padding: '60px 0' }}>
-        <div style={{ maxWidth: 500, margin: '0 auto', padding: '0 15px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 30 }}>
-            <h1 style={{ fontSize: 32, fontWeight: 500, color: '#222', marginBottom: 10 }}>
-              {isLogin ? 'Login' : 'Register'}
-            </h1>
-            <p style={{ color: '#666' }}>
-              {isLogin ? 'Welcome back! Please login to your account.' : 'Create a new account to get started.'}
-            </p>
-          </div>
-
-          {error && (
-            <div style={{ background: '#ffebee', color: '#c62828', padding: '12px 15px', borderRadius: 4, marginBottom: 15, fontSize: 14 }}>
-              {error}
+      <div className="py-12 md:py-16">
+        <div className="max-w-md mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-card p-8 md:p-10">
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-medium text-heading mb-2">{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
+              <p className="text-body text-sm">{isLogin ? 'Please login to your account.' : 'Create a new account to get started.'}</p>
             </div>
-          )}
 
-          <form onSubmit={isLogin ? handleLogin : handleRegister}>
-            {!isLogin && (
-              <div style={{ marginBottom: 15 }}>
-                <label style={labelStyle}>Full Name *</label>
-                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} style={inputStyle} />
-              </div>
-            )}
-            <div style={{ marginBottom: 15 }}>
-              <label style={labelStyle}>Email *</label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} style={inputStyle} />
-            </div>
-            <div style={{ marginBottom: 20 }}>
-              <label style={labelStyle}>Password *</label>
-              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
-            </div>
-            <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px', background: loading ? '#ccc' : '#ce967e', color: '#fff', textTransform: 'uppercase', fontSize: 14, fontWeight: 500, letterSpacing: 2, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all 0.3s' }}>
-              {loading ? 'Please wait...' : isLogin ? 'Login' : 'Register'}
-            </button>
-          </form>
+            {error && <div className="bg-red-50 text-error px-4 py-3 rounded-lg mb-4 text-sm">{error}</div>}
 
-          <div style={{ textAlign: 'center', marginTop: 20 }}>
-            <button
-              onClick={() => { setIsLogin(!isLogin); setError(''); }}
-              style={{ background: 'none', border: 'none', color: '#ce967e', fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-primary)' }}
-            >
-              {isLogin ? "Don't have an account? Register" : 'Already have an account? Login'}
-            </button>
+            <form onSubmit={isLogin ? handleLogin : handleRegister}>
+              {!isLogin && (
+                <div className="mb-4"><label className={labelCls}>Full Name *</label><input type="text" required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} /></div>
+              )}
+              <div className="mb-4"><label className={labelCls}>Email *</label><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} /></div>
+              <div className="mb-6"><label className={labelCls}>Password *</label><input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={inputCls} /></div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 bg-primary text-white rounded-full text-sm font-medium uppercase tracking-wider hover:bg-primary-hover transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Please wait...' : isLogin ? 'Login' : 'Register'}
+              </button>
+            </form>
+
+            <div className="text-center mt-5">
+              <button
+                onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                className="text-primary text-sm font-medium hover:underline"
+              >
+                {isLogin ? "Don't have an account? Register" : 'Already have an account? Login'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -577,7 +374,7 @@ function AccountContent() {
 
 export default function AccountPage() {
   return (
-    <Suspense fallback={<div style={{ textAlign: 'center', padding: '80px 15px', color: '#666' }}>Loading...</div>}>
+    <Suspense fallback={<div className="text-center py-20 text-body">Loading...</div>}>
       <AccountContent />
     </Suspense>
   );

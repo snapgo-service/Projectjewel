@@ -1,15 +1,18 @@
 import React from "react";
-import styles from "./SaleBadge.module.css";
 
 interface SaleBadgeProps {
   percent?: number;
   variant?: "sale" | "new" | "hot" | "featured";
 }
 
-export default function SaleBadge({
-  percent,
-  variant = "sale",
-}: SaleBadgeProps) {
+const variantClasses = {
+  sale: "bg-primary text-white",
+  new: "bg-success text-white",
+  hot: "bg-error text-white",
+  featured: "bg-secondary text-white",
+};
+
+export default function SaleBadge({ percent, variant = "sale" }: SaleBadgeProps) {
   const label =
     variant === "sale" && percent != null
       ? `-${percent}%`
@@ -22,6 +25,8 @@ export default function SaleBadge({
             : `-${percent}%`;
 
   return (
-    <span className={`${styles.badge} ${styles[variant]}`}>{label}</span>
+    <span className={`inline-block text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full ${variantClasses[variant]}`}>
+      {label}
+    </span>
   );
 }

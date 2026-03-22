@@ -1,5 +1,6 @@
 import { HeroBanner } from '@/components/home/HeroBanner';
 import TrustBadges from '@/components/home/TrustBadges';
+import { CategoryShowcase } from '@/components/home/CategoryShowcase';
 import { BestSelling } from '@/components/home/BestSelling';
 import PromoBanners from '@/components/home/PromoBanners';
 import BrandStory from '@/components/home/BrandStory';
@@ -13,6 +14,7 @@ export default function HomePage() {
     <>
       <HeroBanner />
       <TrustBadges />
+      <CategoryShowcase />
       <BestSelling />
       <PromoBanners />
       <BrandStory />

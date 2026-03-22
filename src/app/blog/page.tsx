@@ -10,36 +10,36 @@ export default function BlogPage() {
   return (
     <>
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Blog' }]} />
-      <div style={{ padding: '60px 0' }}>
-        <div style={{ maxWidth: 1430, margin: '0 auto', padding: '0 15px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 50 }}>
-            <h1 style={{ fontSize: 36, fontWeight: 500, color: '#222', marginBottom: 15 }}>Our Blog</h1>
-            <p style={{ color: '#666', maxWidth: 600, margin: '0 auto' }}>
+      <div className="py-16">
+        <div className="max-w-[1430px] mx-auto px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-medium text-heading mb-4 font-[family-name:var(--font-serif)]">Our Blog</h1>
+            <p className="text-body max-w-xl mx-auto">
               Discover jewelry tips, trends, and expert guides from our team.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 30 }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogPosts.map((post) => (
-              <article key={post.id} style={{ background: '#fff', overflow: 'hidden', transition: 'box-shadow 0.3s' }}>
-                <Link href={`/blog/${post.slug}`} style={{ display: 'block', position: 'relative', aspectRatio: '16/10', overflow: 'hidden' }}>
-                  <Image src={post.image} alt={post.title} fill sizes="(max-width: 768px) 100vw, 33vw" style={{ objectFit: 'cover', transition: 'transform 0.5s' }} />
+              <article key={post.id} className="bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-shadow duration-300">
+                <Link href={`/blog/${post.slug}`} className="block relative aspect-[16/10] overflow-hidden">
+                  <Image src={post.image} alt={post.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-500 hover:scale-105" />
                 </Link>
-                <div style={{ padding: '20px 0' }}>
-                  <div style={{ display: 'flex', gap: 15, fontSize: 13, color: '#999', marginBottom: 10 }}>
+                <div className="p-5">
+                  <div className="flex gap-3 text-xs text-body-light mb-3">
                     <span>{post.date}</span>
                     <span>|</span>
-                    <span>{post.category}</span>
+                    <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">{post.category}</span>
                   </div>
-                  <h2 style={{ fontSize: 20, fontWeight: 500, color: '#222', marginBottom: 12, lineHeight: 1.4 }}>
-                    <Link href={`/blog/${post.slug}`} style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.3s' }}>
+                  <h2 className="text-lg font-medium text-heading mb-3 leading-snug">
+                    <Link href={`/blog/${post.slug}`} className="text-inherit no-underline hover:text-primary transition-colors duration-300">
                       {post.title}
                     </Link>
                   </h2>
-                  <p style={{ color: '#666', fontSize: 14, lineHeight: 1.6, marginBottom: 15 }}>
+                  <p className="text-body text-sm leading-relaxed mb-4">
                     {post.excerpt}
                   </p>
-                  <Link href={`/blog/${post.slug}`} style={{ color: '#ce967e', fontSize: 13, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  <Link href={`/blog/${post.slug}`} className="text-primary text-xs font-medium uppercase tracking-wider hover:text-primary-hover transition-colors">
                     Read More →
                   </Link>
                 </div>

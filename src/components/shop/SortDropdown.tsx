@@ -1,7 +1,5 @@
 'use client';
 
-import styles from './SortDropdown.module.css';
-
 interface SortDropdownProps {
   value: string;
   onChange: (value: string) => void;
@@ -10,9 +8,9 @@ interface SortDropdownProps {
 export function SortDropdown({ value, onChange }: SortDropdownProps) {
   return (
     <select
-      className={styles.select}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      className="px-4 py-2.5 rounded-lg border border-border text-sm text-heading bg-white focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all cursor-pointer"
     >
       <option value="default">Default Sorting</option>
       <option value="price-asc">Price: Low to High</option>

@@ -8,7 +8,6 @@ import { useCart } from '@/store/CartContext';
 import { useAdmin } from '@/store/AdminContext';
 import { formatCurrency } from '@/utils/formatCurrency';
 import Breadcrumb from '@/components/layout/Breadcrumb';
-import styles from './page.module.css';
 
 declare global {
   interface Window {
@@ -188,7 +187,7 @@ export default function CheckoutPage() {
           email: form.email,
           contact: form.phone,
         },
-        theme: { color: '#ce967e' },
+        theme: { color: '#E8A0BF' },
         modal: {
           ondismiss: () => { setLoading(false); },
         },
@@ -215,12 +214,21 @@ export default function CheckoutPage() {
     return (
       <>
         <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Order Confirmed' }]} />
-        <div className={styles.success}>
-          <div className={styles.checkmark}>✓</div>
-          <h2>Thank You for Your Order!</h2>
-          {orderId && <p style={{ fontSize: 16, color: '#ce967e', fontWeight: 500, marginBottom: 10 }}>Order ID: {orderId}</p>}
-          <p>Your order has been placed successfully. We&apos;ll send you a confirmation email shortly.</p>
-          <Link href="/shop" className={styles.placeOrderBtn} style={{ maxWidth: 300, margin: '0 auto', display: 'inline-block' }}>
+        <div className="flex flex-col items-center justify-center text-center py-20 px-4 min-h-[60vh]">
+          <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center text-success text-4xl font-bold mb-6">
+            &#10003;
+          </div>
+          <h2 className="text-3xl font-semibold text-heading mb-3">Thank You for Your Order!</h2>
+          {orderId && (
+            <p className="text-base text-primary font-medium mb-3">Order ID: {orderId}</p>
+          )}
+          <p className="text-body mb-8 max-w-md">
+            Your order has been placed successfully. We&apos;ll send you a confirmation email shortly.
+          </p>
+          <Link
+            href="/shop"
+            className="bg-primary hover:bg-primary-hover text-white rounded-full px-10 py-4 font-medium transition-colors"
+          >
             Continue Shopping
           </Link>
         </div>
@@ -232,10 +240,13 @@ export default function CheckoutPage() {
     return (
       <>
         <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Checkout' }]} />
-        <div style={{ textAlign: 'center', padding: '80px 15px' }}>
-          <h2>Your cart is empty</h2>
-          <p style={{ color: '#666', marginTop: 10 }}>Add some items before checkout.</p>
-          <Link href="/shop" className={styles.placeOrderBtn} style={{ maxWidth: 300, margin: '20px auto 0', display: 'inline-block' }}>
+        <div className="flex flex-col items-center justify-center text-center py-20 px-4">
+          <h2 className="text-2xl font-semibold text-heading mb-3">Your cart is empty</h2>
+          <p className="text-body mb-6">Add some items before checkout.</p>
+          <Link
+            href="/shop"
+            className="bg-primary hover:bg-primary-hover text-white rounded-full px-10 py-4 font-medium transition-colors"
+          >
             Go to Shop
           </Link>
         </div>
@@ -243,154 +254,239 @@ export default function CheckoutPage() {
     );
   }
 
+  const inputClasses = "w-full rounded-lg border border-border focus:ring-2 focus:ring-primary/30 focus:border-primary px-4 py-3 text-heading outline-none transition-all";
+
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Checkout' }]} />
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <h1 className={styles.title}>Checkout</h1>
+      <div className="bg-bg-ivory min-h-screen py-10">
+        <div className="max-w-6xl mx-auto px-4">
+          <h1 className="text-3xl font-semibold text-heading mb-8">Checkout</h1>
+
           {error && (
-            <div style={{ background: '#ffebee', color: '#c62828', padding: '12px 15px', borderRadius: 4, marginBottom: 20, fontSize: 14 }}>
+            <div className="bg-error/10 text-error px-4 py-3 rounded-lg mb-6 text-sm font-medium">
               {error}
             </div>
           )}
+
           <form onSubmit={handlePlaceOrder}>
-            <div className={styles.layout}>
-              <div className={styles.formSection}>
-                <h3>Billing Details</h3>
-                <div className={styles.formGrid}>
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>First Name <span className={styles.required}>*</span></label>
-                    <input type="text" className={styles.input} required value={form.firstName} onChange={(e) => updateForm('firstName', e.target.value)} />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>Last Name <span className={styles.required}>*</span></label>
-                    <input type="text" className={styles.input} required value={form.lastName} onChange={(e) => updateForm('lastName', e.target.value)} />
-                  </div>
-                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                    <label className={styles.label}>Company Name (optional)</label>
-                    <input type="text" className={styles.input} value={form.company} onChange={(e) => updateForm('company', e.target.value)} />
-                  </div>
-                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                    <label className={styles.label}>Country / Region <span className={styles.required}>*</span></label>
-                    <select className={styles.select} required value={form.country} onChange={(e) => updateForm('country', e.target.value)}>
-                      <option value="">Select a country</option>
-                      <option value="IN">India</option>
-                      <option value="US">United States</option>
-                      <option value="CA">Canada</option>
-                      <option value="UK">United Kingdom</option>
-                      <option value="AU">Australia</option>
-                    </select>
-                  </div>
-                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                    <label className={styles.label}>Street Address <span className={styles.required}>*</span></label>
-                    <input type="text" className={styles.input} placeholder="House number and street name" required value={form.address} onChange={(e) => updateForm('address', e.target.value)} />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>City <span className={styles.required}>*</span></label>
-                    <input type="text" className={styles.input} required value={form.city} onChange={(e) => updateForm('city', e.target.value)} />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>State <span className={styles.required}>*</span></label>
-                    <input type="text" className={styles.input} required value={form.state} onChange={(e) => updateForm('state', e.target.value)} />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>ZIP Code <span className={styles.required}>*</span></label>
-                    <input type="text" className={styles.input} required value={form.zip} onChange={(e) => updateForm('zip', e.target.value)} />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>Mobile Number <span className={styles.required}>*</span></label>
-                    <input type="tel" className={styles.input} required pattern="[0-9]{10}" minLength={10} maxLength={10} placeholder="10-digit mobile number" title="Please enter a valid 10-digit mobile number" value={form.phone} onChange={(e) => updateForm('phone', e.target.value.replace(/\D/g, '').slice(0, 10))} />
-                  </div>
-                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                    <label className={styles.label}>Email Address <span className={styles.required}>*</span></label>
-                    <input type="email" className={styles.input} required value={form.email} onChange={(e) => updateForm('email', e.target.value)} />
-                  </div>
-                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                    <label className={styles.label}>Order Notes (optional)</label>
-                    <textarea className={styles.textarea} placeholder="Notes about your order, e.g. special notes for delivery." value={form.notes} onChange={(e) => updateForm('notes', e.target.value)} />
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+              {/* Billing Form */}
+              <div className="lg:col-span-3">
+                <div className="bg-white rounded-xl p-8 shadow-card">
+                  <h3 className="text-xl font-semibold text-heading mb-6">Billing Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        First Name <span className="text-error">*</span>
+                      </label>
+                      <input type="text" className={inputClasses} required value={form.firstName} onChange={(e) => updateForm('firstName', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        Last Name <span className="text-error">*</span>
+                      </label>
+                      <input type="text" className={inputClasses} required value={form.lastName} onChange={(e) => updateForm('lastName', e.target.value)} />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        Company Name (optional)
+                      </label>
+                      <input type="text" className={inputClasses} value={form.company} onChange={(e) => updateForm('company', e.target.value)} />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        Country / Region <span className="text-error">*</span>
+                      </label>
+                      <select className={inputClasses} required value={form.country} onChange={(e) => updateForm('country', e.target.value)}>
+                        <option value="">Select a country</option>
+                        <option value="IN">India</option>
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="UK">United Kingdom</option>
+                        <option value="AU">Australia</option>
+                      </select>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        Street Address <span className="text-error">*</span>
+                      </label>
+                      <input type="text" className={inputClasses} placeholder="House number and street name" required value={form.address} onChange={(e) => updateForm('address', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        City <span className="text-error">*</span>
+                      </label>
+                      <input type="text" className={inputClasses} required value={form.city} onChange={(e) => updateForm('city', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        State <span className="text-error">*</span>
+                      </label>
+                      <input type="text" className={inputClasses} required value={form.state} onChange={(e) => updateForm('state', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        ZIP Code <span className="text-error">*</span>
+                      </label>
+                      <input type="text" className={inputClasses} required value={form.zip} onChange={(e) => updateForm('zip', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        Mobile Number <span className="text-error">*</span>
+                      </label>
+                      <input type="tel" className={inputClasses} required pattern="[0-9]{10}" minLength={10} maxLength={10} placeholder="10-digit mobile number" title="Please enter a valid 10-digit mobile number" value={form.phone} onChange={(e) => updateForm('phone', e.target.value.replace(/\D/g, '').slice(0, 10))} />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        Email Address <span className="text-error">*</span>
+                      </label>
+                      <input type="email" className={inputClasses} required value={form.email} onChange={(e) => updateForm('email', e.target.value)} />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium text-heading mb-1.5 block">
+                        Order Notes (optional)
+                      </label>
+                      <textarea className={`${inputClasses} min-h-[100px] resize-y`} placeholder="Notes about your order, e.g. special notes for delivery." value={form.notes} onChange={(e) => updateForm('notes', e.target.value)} />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className={styles.orderSummary}>
-                <h3 className={styles.orderTitle}>Your Order</h3>
-                {items.map((item) => (
-                  <div key={item.product.id} className={styles.orderItem}>
-                    <span className={styles.orderItemName}>{item.product.name}</span>
-                    <span className={styles.orderItemQty}>× {item.quantity}</span>
-                    <span className={styles.orderItemPrice}>
-                      {formatCurrency((item.product.salePrice || item.product.price) * item.quantity)}
-                    </span>
-                  </div>
-                ))}
-                {/* Coupon Code */}
-                <div style={{ padding: '12px 0', borderBottom: '1px solid #eee' }}>
-                  {appliedCoupon ? (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <span style={{ fontSize: 13, color: '#059669', fontWeight: 500 }}>
-                          Coupon &quot;{appliedCoupon.code}&quot; applied
+              {/* Order Summary - Sticky */}
+              <div className="lg:col-span-2">
+                <div className="bg-white rounded-xl p-8 shadow-card sticky top-24">
+                  <h3 className="text-xl font-semibold text-heading mb-6">Your Order</h3>
+
+                  {/* Order items */}
+                  <div className="space-y-3 mb-4">
+                    {items.map((item) => (
+                      <div key={item.product.id} className="flex items-center justify-between gap-3 text-sm">
+                        <span className="text-heading font-medium flex-1 truncate">{item.product.name}</span>
+                        <span className="text-body-light shrink-0">&times; {item.quantity}</span>
+                        <span className="text-heading font-medium shrink-0">
+                          {formatCurrency((item.product.salePrice || item.product.price) * item.quantity)}
                         </span>
-                        <div style={{ fontSize: 12, color: '#059669' }}>
-                          {appliedCoupon.discountType === 'percentage' ? `${appliedCoupon.discountValue}% off` : `₹${appliedCoupon.discountValue} off`}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Coupon Code */}
+                  <div className="py-4 border-y border-border">
+                    {appliedCoupon ? (
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="text-[13px] text-success font-medium">
+                            Coupon &quot;{appliedCoupon.code}&quot; applied
+                          </span>
+                          <div className="text-xs text-success">
+                            {appliedCoupon.discountType === 'percentage' ? `${appliedCoupon.discountValue}% off` : `₹${appliedCoupon.discountValue} off`}
+                          </div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={removeCoupon}
+                          className="text-error text-xs font-medium hover:underline cursor-pointer bg-transparent border-none"
+                        >
+                          Remove
+                        </button>
                       </div>
-                      <button type="button" onClick={removeCoupon} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: 12, fontWeight: 500 }}>Remove</button>
-                    </div>
-                  ) : (
-                    <div>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <input
-                          type="text"
-                          placeholder="Enter coupon code"
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                          style={{ flex: 1, padding: '8px 12px', border: '1px solid #ddd', borderRadius: 4, fontSize: 13, textTransform: 'uppercase' }}
-                        />
-                        <button type="button" onClick={applyCoupon} style={{ padding: '8px 16px', background: '#222', color: '#fff', border: 'none', borderRadius: 4, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }}>Apply</button>
+                    ) : (
+                      <div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Enter coupon code"
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                            className="flex-1 px-3 py-2 border border-border rounded-lg text-sm uppercase outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                          />
+                          <button
+                            type="button"
+                            onClick={applyCoupon}
+                            className="px-5 py-2 bg-heading text-white rounded-lg text-sm font-medium cursor-pointer hover:bg-heading/90 transition-colors whitespace-nowrap"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                        {couponError && <p className="text-error text-xs mt-1.5">{couponError}</p>}
                       </div>
-                      {couponError && <p style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{couponError}</p>}
+                    )}
+                  </div>
+
+                  {/* Totals */}
+                  <div className="flex justify-between py-3 text-body text-sm">
+                    <span>Subtotal</span>
+                    <span>{formatCurrency(subtotal)}</span>
+                  </div>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between py-3 text-sm">
+                      <span className="text-body">Discount</span>
+                      <span className="text-success font-medium">-{formatCurrency(discountAmount)}</span>
                     </div>
                   )}
-                </div>
-                <div className={styles.orderRow}>
-                  <span>Subtotal</span>
-                  <span>{formatCurrency(subtotal)}</span>
-                </div>
-                {discountAmount > 0 && (
-                  <div className={styles.orderRow}>
-                    <span>Discount</span>
-                    <span style={{ color: '#059669' }}>-{formatCurrency(discountAmount)}</span>
+                  <div className="flex justify-between py-3 text-body text-sm border-b border-border">
+                    <span>Shipping</span>
+                    <span>{shipping === 0 ? 'Free' : formatCurrency(shipping)}</span>
                   </div>
-                )}
-                <div className={styles.orderRow}>
-                  <span>Shipping</span>
-                  <span>{shipping === 0 ? 'Free' : formatCurrency(shipping)}</span>
-                </div>
-                <div className={styles.orderTotal}>
-                  <span>Total</span>
-                  <span>{formatCurrency(total)}</span>
-                </div>
+                  <div className="flex justify-between py-4 text-heading font-bold text-lg">
+                    <span>Total</span>
+                    <span>{formatCurrency(total)}</span>
+                  </div>
 
-                <div className={styles.paymentMethod}>
-                  <label className={styles.paymentLabel} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, cursor: 'pointer' }}>
-                    <input type="radio" name="payment" value="razorpay" checked={paymentMethod === 'razorpay'} onChange={() => setPaymentMethod('razorpay')} />
-                    Pay Online (Cards, UPI, Net Banking)
-                  </label>
-                  <label className={styles.paymentLabel} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-                    <input type="radio" name="payment" value="cod" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
-                    Cash on Delivery
-                  </label>
-                  <p className={styles.paymentDesc} style={{ marginTop: 8 }}>
-                    {paymentMethod === 'razorpay' ? 'Pay securely via Razorpay — Cards, UPI, Net Banking.' : 'Pay with cash upon delivery.'}
-                  </p>
-                </div>
+                  {/* Payment Methods */}
+                  <div className="space-y-3 mb-6">
+                    <label
+                      className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        paymentMethod === 'razorpay'
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:border-primary/40'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="payment"
+                        value="razorpay"
+                        checked={paymentMethod === 'razorpay'}
+                        onChange={() => setPaymentMethod('razorpay')}
+                        className="accent-primary w-4 h-4"
+                      />
+                      <span className="text-sm font-medium text-heading">Pay Online (Cards, UPI, Net Banking)</span>
+                    </label>
+                    <label
+                      className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        paymentMethod === 'cod'
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:border-primary/40'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="payment"
+                        value="cod"
+                        checked={paymentMethod === 'cod'}
+                        onChange={() => setPaymentMethod('cod')}
+                        className="accent-primary w-4 h-4"
+                      />
+                      <span className="text-sm font-medium text-heading">Cash on Delivery</span>
+                    </label>
+                    <p className="text-xs text-body-light mt-2">
+                      {paymentMethod === 'razorpay'
+                        ? 'Pay securely via Razorpay — Cards, UPI, Net Banking.'
+                        : 'Pay with cash upon delivery.'}
+                    </p>
+                  </div>
 
-                <button type="submit" className={styles.placeOrderBtn} disabled={loading}>
-                  {loading ? 'Processing...' : paymentMethod === 'razorpay' ? 'Pay Now' : 'Place Order'}
-                </button>
+                  {/* Place Order Button */}
+                  <button
+                    type="submit"
+                    className="bg-primary hover:bg-primary-hover text-white rounded-full w-full py-4 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-base"
+                    disabled={loading}
+                  >
+                    {loading ? 'Processing...' : paymentMethod === 'razorpay' ? 'Pay Now' : 'Place Order'}
+                  </button>
+                </div>
               </div>
             </div>
           </form>

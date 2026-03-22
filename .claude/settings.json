@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(head -5 /Users/mohitpurohit/Projectjewel/src/app/product/[slug]/page.tsx)",
+      "Bash(grep -c \"module.css\\\\|styles\\\\.\" /Users/mohitpurohit/Projectjewel/src/app/product/[slug]/page.tsx)",
+      "Read(//Users/mohitpurohit/Projectjewel/**)"
+    ]
+  }
+}

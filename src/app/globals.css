@@ -1,20 +1,74 @@
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=Cardo:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
 
+/* ===== Tailwind v4 Design System ===== */
+@theme {
+  --color-primary: #E8A0BF;
+  --color-primary-hover: #D4849A;
+  --color-primary-light: #F5D5E5;
+  --color-secondary: #C9A96E;
+  --color-secondary-hover: #B8944F;
+  --color-bg-ivory: #FDF8F4;
+  --color-bg-blush: #FEF0F0;
+  --color-heading: #1A1A2E;
+  --color-body: #6B7280;
+  --color-body-light: #9CA3AF;
+  --color-border: #F0E6E6;
+  --color-border-dark: #E8E0E0;
+  --color-success: #7FB069;
+  --color-error: #E85D75;
+  --color-star: #F5A623;
+  --color-star-empty: #E8E0E0;
+
+  --font-primary: 'Jost', sans-serif;
+  --font-serif: 'Cardo', serif;
+  --font-inter: 'Inter', sans-serif;
+
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 12px 30px rgba(0, 0, 0, 0.08);
+  --shadow-navbar: 0 2px 15px rgba(0, 0, 0, 0.06);
+
+  --animate-fade-in: fadeIn 0.5s ease-out forwards;
+  --animate-fade-in-up: fadeInUp 0.6s ease-out forwards;
+  --animate-slide-down: slideDown 0.3s ease-out;
+  --animate-scale-in: scaleIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== Legacy CSS Variables (for admin panel) ===== */
 :root {
-  --color-primary: #ce967e;
-  --color-primary-hover: #b8836b;
-  --color-dark: #222222;
-  --color-bg-light: #f7f7f7;
+  --color-primary: #E8A0BF;
+  --color-primary-hover: #D4849A;
+  --color-dark: #1A1A2E;
+  --color-bg-light: #FDF8F4;
   --color-bg-white: #ffffff;
-  --color-text-body: #666666;
-  --color-text-heading: #222222;
-  --color-border: #e5e5e5;
-  --color-star: #f5a623;
-  --color-star-empty: #ddd;
-  --color-success: #4caf50;
-  --color-error: #f44336;
-  --color-footer-social: #2f3336;
-  --color-footer-social-bg: #f5f5f5;
+  --color-text-body: #6B7280;
+  --color-text-heading: #1A1A2E;
+  --color-border: #F0E6E6;
+  --color-star: #F5A623;
+  --color-star-empty: #E8E0E0;
+  --color-success: #7FB069;
+  --color-error: #E85D75;
+  --color-footer-social: #1A1A2E;
+  --color-footer-social-bg: #FEF0F0;
 
   --font-primary: 'Jost', sans-serif;
   --font-serif: 'Cardo', serif;
@@ -29,82 +83,71 @@
   --shadow-hover: 0px 15px 25px 0px rgba(0, 0, 0, 0.05);
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* ===== Base Layer - Works WITH Tailwind preflight ===== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-primary);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+    color: var(--color-body);
+    background-color: var(--color-bg-ivory);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-heading);
+    font-family: var(--font-primary);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  h1 { font-size: 34px; }
+  h2 { font-size: 32px; }
+  h3 { font-size: 26px; line-height: 1.5; }
+  h4 { font-size: 24px; line-height: 1.5; }
+  h5 { font-size: 20px; line-height: 1.5; }
+  h6 { font-size: 18px; line-height: 1.5; }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  ul, ol {
+    list-style: none;
+  }
+
+  button {
+    cursor: pointer;
+    font-family: var(--font-primary);
+  }
+
+  input, textarea, select {
+    font-family: var(--font-primary);
+    font-size: 15px;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    opacity: 0.5;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: var(--font-primary);
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 24px;
-  letter-spacing: 0.5px;
-  color: var(--color-text-body);
-  background-color: var(--color-bg-white);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  color: var(--color-text-heading);
-  font-family: var(--font-primary);
-  font-weight: 500;
-  line-height: 1.2;
-}
-
-h1 { font-size: 34px; }
-h2 { font-size: 32px; }
-h3 { font-size: 26px; line-height: 1.5; }
-h4 { font-size: 24px; line-height: 1.5; }
-h5 { font-size: 20px; line-height: 1.5; }
-h6 { font-size: 18px; line-height: 1.5; }
-
-a {
-  color: inherit;
-  text-decoration: none;
-  transition: var(--transition);
-}
-
-a:hover {
-  color: var(--color-primary);
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-ul, ol {
-  list-style: none;
-}
-
-button {
-  cursor: pointer;
-  font-family: var(--font-primary);
-  border: none;
-  background: none;
-}
-
-input, textarea, select {
-  font-family: var(--font-primary);
-  font-size: 15px;
-  outline: none;
-}
-
-input::placeholder,
-textarea::placeholder {
-  opacity: 0.5;
-}
-
+/* ===== Utility Classes (legacy support for admin) ===== */
 .container {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -125,25 +168,25 @@ textarea::placeholder {
   display: inline-block;
 }
 
-/* Scrollbar */
+/* ===== Scrollbar ===== */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #FDF8F4;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
+  background: #E8A0BF;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-hover);
+  background: #D4849A;
 }
 
-/* Responsive */
+/* ===== Responsive ===== */
 @media (max-width: 1024px) {
   h1 { font-size: 32px; }
   h2 { font-size: 28px; }

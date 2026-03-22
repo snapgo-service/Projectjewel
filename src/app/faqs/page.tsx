@@ -20,44 +20,31 @@ export default function FAQsPage() {
   return (
     <>
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'FAQs' }]} />
-      <div style={{ padding: '60px 0' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 15px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 50 }}>
-            <h1 style={{ fontSize: 36, fontWeight: 500, color: '#222', marginBottom: 15 }}>
+      <div className="py-16">
+        <div className="max-w-3xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-medium text-heading mb-4 font-[family-name:var(--font-serif)]">
               Frequently Asked Questions
             </h1>
-            <p style={{ color: '#666' }}>Find answers to common questions about our products and services.</p>
+            <p className="text-body">Find answers to common questions about our products and services.</p>
           </div>
 
-          <div>
+          <div className="flex flex-col gap-4">
             {faqs.map((faq, i) => (
-              <div key={i} style={{ borderBottom: '1px solid #e5e5e5' }}>
+              <div key={i} className="bg-white rounded-xl shadow-card overflow-hidden">
                 <button
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  style={{
-                    width: '100%',
-                    padding: '20px 0',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    fontSize: 16,
-                    fontWeight: 500,
-                    color: openIndex === i ? '#ce967e' : '#222',
-                    transition: 'color 0.3s',
-                    fontFamily: 'var(--font-primary)',
-                  }}
+                  className={`w-full px-6 py-5 flex justify-between items-center bg-transparent border-none cursor-pointer text-left text-base font-medium transition-colors duration-300 ${openIndex === i ? 'text-primary' : 'text-heading'}`}
                 >
                   {faq.q}
-                  <span style={{ fontSize: 22, color: '#ce967e', flexShrink: 0, marginLeft: 15 }}>
-                    {openIndex === i ? '−' : '+'}
+                  <span className={`text-primary flex-shrink-0 ml-4 transition-transform duration-300 ${openIndex === i ? 'rotate-180' : ''}`}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
                   </span>
                 </button>
                 {openIndex === i && (
-                  <div style={{ padding: '0 0 20px', color: '#666', lineHeight: 1.8 }}>
+                  <div className="px-6 pb-5 text-body leading-relaxed">
                     {faq.a}
                   </div>
                 )}

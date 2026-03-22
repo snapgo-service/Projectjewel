@@ -46,49 +46,49 @@ export default function ContactPage() {
   return (
     <>
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Contact Us' }]} />
-      <div style={{ padding: '60px 0' }}>
-        <div style={{ maxWidth: 1430, margin: '0 auto', padding: '0 15px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 50 }}>
-            <h1 style={{ fontSize: 36, fontWeight: 500, color: '#222', marginBottom: 15 }}>Contact Us</h1>
-            <p style={{ color: '#666', maxWidth: 600, margin: '0 auto' }}>
+      <div className="py-16">
+        <div className="max-w-[1430px] mx-auto px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-medium text-heading mb-4 font-[family-name:var(--font-serif)]">Contact Us</h1>
+            <p className="text-body max-w-xl mx-auto">
               Have questions about our products or need assistance? We&apos;d love to hear from you.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 50 }}>
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="bg-white rounded-2xl shadow-card p-8">
               {submitted ? (
-                <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                  <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#4caf50', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, margin: '0 auto 20px' }}>✓</div>
-                  <h3 style={{ fontSize: 22, color: '#222', marginBottom: 10 }}>Message Sent!</h3>
-                  <p style={{ color: '#666' }}>We&apos;ll get back to you within 24 hours.</p>
+                <div className="text-center py-10">
+                  <div className="w-16 h-16 rounded-full bg-success text-white flex items-center justify-center text-3xl mx-auto mb-5">✓</div>
+                  <h3 className="text-xl text-heading mb-2">Message Sent!</h3>
+                  <p className="text-body">We&apos;ll get back to you within 24 hours.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
                   {error && (
-                    <div style={{ background: '#ffebee', color: '#c62828', padding: '12px 15px', borderRadius: 4, marginBottom: 15, fontSize: 14 }}>
+                    <div className="bg-red-50 text-error px-4 py-3 rounded-lg mb-4 text-sm">
                       {error}
                     </div>
                   )}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 15 }}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#222', marginBottom: 6 }}>Name *</label>
-                      <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', fontSize: 14 }} />
+                      <label className="block text-sm font-medium text-heading mb-1.5">Name *</label>
+                      <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-colors" />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#222', marginBottom: 6 }}>Email *</label>
-                      <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', fontSize: 14 }} />
+                      <label className="block text-sm font-medium text-heading mb-1.5">Email *</label>
+                      <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-colors" />
                     </div>
                   </div>
-                  <div style={{ marginBottom: 15 }}>
-                    <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#222', marginBottom: 6 }}>Subject</label>
-                    <input type="text" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', fontSize: 14 }} />
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-heading mb-1.5">Subject</label>
+                    <input type="text" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} className="w-full px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-colors" />
                   </div>
-                  <div style={{ marginBottom: 20 }}>
-                    <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#222', marginBottom: 6 }}>Message *</label>
-                    <textarea required value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', fontSize: 14, minHeight: 150, resize: 'vertical', fontFamily: 'var(--font-primary)' }} />
+                  <div className="mb-5">
+                    <label className="block text-sm font-medium text-heading mb-1.5">Message *</label>
+                    <textarea required value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="w-full px-4 py-2.5 border border-border rounded-lg text-sm min-h-[150px] resize-y focus:outline-none focus:border-primary transition-colors" />
                   </div>
-                  <button type="submit" disabled={loading} style={{ padding: '12px 35px', background: loading ? '#ccc' : '#ce967e', color: '#fff', textTransform: 'uppercase', fontSize: 14, fontWeight: 500, letterSpacing: 2, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all 0.3s' }}>
+                  <button type="submit" disabled={loading} className={`px-9 py-3 rounded-full text-white uppercase text-sm font-medium tracking-widest transition-all duration-300 ${loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-primary hover:bg-primary-hover cursor-pointer'}`}>
                     {loading ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
@@ -96,22 +96,22 @@ export default function ContactPage() {
             </div>
 
             <div>
-              <div style={{ marginBottom: 30 }}>
-                <h3 style={{ fontSize: 20, fontWeight: 500, color: '#222', marginBottom: 15 }}>Get in Touch</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div className="mb-8">
+                <h3 className="text-xl font-medium text-heading mb-4">Get in Touch</h3>
+                <div className="flex flex-col gap-5">
                   {contactInfo.map((item) => (
-                    <div key={item.title} style={{ display: 'flex', gap: 15 }}>
-                      <span style={{ fontSize: 24 }}>{item.icon}</span>
+                    <div key={item.title} className="flex gap-4 bg-bg-blush rounded-xl p-4">
+                      <span className="text-2xl">{item.icon}</span>
                       <div>
-                        <div style={{ fontWeight: 500, color: '#222', marginBottom: 3 }}>{item.title}</div>
-                        <div style={{ color: '#666', fontSize: 14 }}>{item.text}</div>
+                        <div className="font-medium text-heading mb-1">{item.title}</div>
+                        <div className="text-body text-sm">{item.text}</div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div style={{ width: '100%', height: 250, background: '#f7f7f7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', borderRadius: 8 }}>
+              <div className="w-full h-[250px] bg-bg-ivory flex items-center justify-center text-body-light rounded-xl">
                 Map Placeholder
               </div>
             </div>

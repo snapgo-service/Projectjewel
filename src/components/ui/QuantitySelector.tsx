@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import styles from "./QuantitySelector.module.css";
 
 interface QuantitySelectorProps {
   value: number;
@@ -25,20 +24,22 @@ export default function QuantitySelector({
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className="inline-flex items-center border border-border rounded-full overflow-hidden">
       <button
         type="button"
-        className={styles.btn}
+        className="w-10 h-10 flex items-center justify-center text-heading hover:bg-primary/10 transition-colors duration-300 disabled:opacity-30"
         onClick={decrement}
         disabled={value <= min}
         aria-label="Decrease quantity"
       >
         &minus;
       </button>
-      <span className={styles.display}>{value}</span>
+      <span className="w-10 text-center text-heading font-medium text-sm select-none">
+        {value}
+      </span>
       <button
         type="button"
-        className={styles.btn}
+        className="w-10 h-10 flex items-center justify-center text-heading hover:bg-primary/10 transition-colors duration-300 disabled:opacity-30"
         onClick={increment}
         disabled={value >= max}
         aria-label="Increase quantity"

@@ -14,9 +14,9 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
 
   if (!category) {
     return (
-      <div style={{ textAlign: 'center', padding: '100px 15px' }}>
-        <h1>Category Not Found</h1>
-        <p>The category you&apos;re looking for doesn&apos;t exist.</p>
+      <div className="text-center py-24 px-4">
+        <h1 className="text-heading text-2xl font-medium">Category Not Found</h1>
+        <p className="text-body mt-3">The category you&apos;re looking for doesn&apos;t exist.</p>
       </div>
     );
   }
@@ -24,20 +24,22 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
   return (
     <>
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Categories', href: '/shop' }, { label: category.name }]} />
-      <div style={{ padding: '40px 0 60px' }}>
-        <div style={{ maxWidth: 1430, margin: '0 auto', padding: '0 15px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <h1 style={{ fontSize: 32, fontWeight: 500, color: '#222', marginBottom: 10 }}>
-              {category.name}
-            </h1>
-            <p style={{ color: '#666', maxWidth: 600, margin: '0 auto' }}>
-              {category.description}
-            </p>
-          </div>
+      <div className="bg-bg-blush py-16 mb-10">
+        <div className="max-w-[1430px] mx-auto px-4 text-center">
+          <h1 className="text-3xl font-medium text-heading mb-3 font-[family-name:var(--font-serif)]">
+            {category.name}
+          </h1>
+          <p className="text-body max-w-xl mx-auto">
+            {category.description}
+          </p>
+        </div>
+      </div>
+      <div className="pb-16">
+        <div className="max-w-[1430px] mx-auto px-4">
           {categoryProducts.length > 0 ? (
             <ProductGrid products={categoryProducts} />
           ) : (
-            <p style={{ textAlign: 'center', color: '#666', padding: '40px 0' }}>
+            <p className="text-center text-body py-10">
               No products found in this category.
             </p>
           )}

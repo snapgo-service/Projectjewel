@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { IMAGES } from '@/data/images';
 import { useAdmin } from '@/store/AdminContext';
-import styles from './Footer.module.css';
 
 const Footer = () => {
   const { settings, categories } = useAdmin();
@@ -59,38 +58,32 @@ const Footer = () => {
   ].filter((link) => link.url);
 
   return (
-    <footer className={styles.footer}>
-      <div className={styles.bgOverlay} />
-      <Image
-        src={IMAGES.footerBg}
-        alt=""
-        fill
-        className={styles.bgImage}
-        quality={80}
-      />
-      <div className={styles.container}>
-        <div className={styles.grid}>
-          <div className={styles.column}>
-            <Link href="/" className={styles.footerLogo}>
+    <footer className="bg-heading relative overflow-hidden">
+      <div className="max-w-[1430px] mx-auto px-4 pt-20 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          <div>
+            <Link href="/" className="inline-block mb-6">
               <Image
                 src={IMAGES.logo}
                 alt={settings.siteName}
                 width={120}
                 height={50}
-                style={{ objectFit: 'contain', height: 50, width: 'auto' }}
+                style={{ objectFit: 'contain', height: 50, width: 'auto', filter: 'brightness(10)' }}
               />
             </Link>
-            <p className={styles.description}>
+            <p className="text-white/60 text-sm leading-relaxed">
               {settings.siteDescription}
             </p>
           </div>
 
-          <div className={styles.column}>
-            <h4 className={styles.columnTitle}>Quick Links</h4>
-            <ul className={styles.linkList}>
+          <div>
+            <h4 className="text-white text-base font-medium mb-6 relative pb-3 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-8 after:h-0.5 after:bg-primary">
+              Quick Links
+            </h4>
+            <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className={styles.footerLink}>
+                  <Link href={link.href} className="text-white/60 text-sm hover:text-primary transition-colors duration-300">
                     {link.label}
                   </Link>
                 </li>
@@ -99,12 +92,14 @@ const Footer = () => {
           </div>
 
           {categories.length > 0 && (
-            <div className={styles.column}>
-              <h4 className={styles.columnTitle}>Categories</h4>
-              <ul className={styles.linkList}>
+            <div>
+              <h4 className="text-white text-base font-medium mb-6 relative pb-3 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-8 after:h-0.5 after:bg-primary">
+                Categories
+              </h4>
+              <ul className="space-y-3">
                 {categories.map((cat) => (
                   <li key={cat.slug}>
-                    <Link href={`/category/${cat.slug}`} className={styles.footerLink}>
+                    <Link href={`/category/${cat.slug}`} className="text-white/60 text-sm hover:text-primary transition-colors duration-300">
                       {cat.name}
                     </Link>
                   </li>
@@ -113,35 +108,37 @@ const Footer = () => {
             </div>
           )}
 
-          <div className={styles.column}>
-            <h4 className={styles.columnTitle}>Contact Info</h4>
-            <ul className={styles.contactList}>
+          <div>
+            <h4 className="text-white text-base font-medium mb-6 relative pb-3 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-8 after:h-0.5 after:bg-primary">
+              Contact Info
+            </h4>
+            <ul className="space-y-4">
               {settings.contactAddress && (
-                <li className={styles.contactItem}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <li className="flex items-start gap-3">
+                  <svg className="text-primary shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
-                  <span>{settings.contactAddress}</span>
+                  <span className="text-white/60 text-sm">{settings.contactAddress}</span>
                 </li>
               )}
               {settings.contactPhone && (
-                <li className={styles.contactItem}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <li className="flex items-start gap-3">
+                  <svg className="text-primary shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                   </svg>
-                  <a href={`tel:${settings.contactPhone}`} className={styles.contactLink}>
+                  <a href={`tel:${settings.contactPhone}`} className="text-white/60 text-sm hover:text-primary transition-colors duration-300">
                     {settings.contactPhone}
                   </a>
                 </li>
               )}
               {settings.contactEmail && (
-                <li className={styles.contactItem}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <li className="flex items-start gap-3">
+                  <svg className="text-primary shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                     <polyline points="22,6 12,13 2,6" />
                   </svg>
-                  <a href={`mailto:${settings.contactEmail}`} className={styles.contactLink}>
+                  <a href={`mailto:${settings.contactEmail}`} className="text-white/60 text-sm hover:text-primary transition-colors duration-300">
                     {settings.contactEmail}
                   </a>
                 </li>
@@ -150,9 +147,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className={styles.bottom}>
+        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           {socialLinks.length > 0 && (
-            <div className={styles.socialIcons}>
+            <div className="flex items-center gap-3">
               {socialLinks.map((link) => (
                 <a
                   key={link.label}
@@ -160,14 +157,14 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={link.label}
-                  className={styles.socialIcon}
+                  className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:bg-primary hover:border-primary hover:text-white transition-all duration-300"
                 >
                   {link.icon}
                 </a>
               ))}
             </div>
           )}
-          <p className={styles.copyright}>
+          <p className="text-white/40 text-sm">
             &copy; {new Date().getFullYear()} {settings.siteName}. All Rights Reserved.
           </p>
         </div>

@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAdmin } from '@/store/AdminContext';
 import { IMAGES } from '@/data/images';
-import styles from './HeroBanner.module.css';
 
 export function HeroBanner() {
   const { sliders } = useAdmin();
@@ -31,58 +30,64 @@ export function HeroBanner() {
   };
 
   return (
-    <section className={styles.hero}>
+    <section className="relative min-h-[500px] md:min-h-[600px] flex items-center overflow-hidden">
       <Image
         src={slide.backgroundImage || IMAGES.heroBg}
         alt="Stellora Silver Jewellery"
         fill
         priority
-        className={styles.bgImage}
+        className="object-cover"
         unoptimized
       />
-      <div className={styles.overlay} />
-      <div className={styles.content}>
-        <div className={styles.textContent}>
-          <p className={styles.subtitle} style={slide.subtitleColor ? { color: slide.subtitleColor } : undefined}>{slide.subtitle}</p>
-          <h1 className={styles.title} style={slide.titleColor ? { color: slide.titleColor } : undefined}>
+      <div className="absolute inset-0 bg-gradient-to-r from-heading/60 via-heading/30 to-transparent" />
+      <div className="relative z-10 max-w-[1430px] mx-auto px-4 w-full flex items-center justify-between py-16">
+        <div className="max-w-xl">
+          <p
+            className="text-sm md:text-base uppercase tracking-[4px] mb-4 font-[family-name:var(--font-serif)] italic"
+            style={{ color: slide.subtitleColor || '#E8A0BF' }}
+          >
+            {slide.subtitle}
+          </p>
+          <h1
+            className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-5"
+            style={{ color: slide.titleColor || '#ffffff' }}
+          >
             {slide.title}
           </h1>
-          <p className={styles.description} style={slide.descriptionColor ? { color: slide.descriptionColor } : undefined}>{slide.description}</p>
-          <Link href={slide.buttonLink} style={{
-            display: 'inline-block',
-            padding: '12px 35px',
-            background: slide.buttonBgColor || '#ce967e',
-            color: slide.buttonTextColor || '#fff',
-            textTransform: 'uppercase',
-            letterSpacing: '2px',
-            fontSize: '14px',
-            fontWeight: 500,
-            transition: 'all 0.3s ease',
-          }}>
+          <p
+            className="text-base md:text-lg leading-relaxed mb-8 max-w-md"
+            style={{ color: slide.descriptionColor || 'rgba(255,255,255,0.85)' }}
+          >
+            {slide.description}
+          </p>
+          <Link
+            href={slide.buttonLink}
+            className="inline-block px-10 py-4 rounded-full uppercase tracking-[2px] text-sm font-medium transition-all duration-300 hover:opacity-90 hover:translate-y-[-2px]"
+            style={{
+              background: slide.buttonBgColor || '#E8A0BF',
+              color: slide.buttonTextColor || '#fff',
+            }}
+          >
             {slide.buttonText}
           </Link>
           {activeSliders.length > 1 && (
-            <div style={{ display: 'flex', gap: 8, marginTop: 25 }}>
+            <div className="flex gap-2 mt-8">
               {activeSliders.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
-                  style={{
-                    width: i === current ? 30 : 10,
-                    height: 10,
-                    borderRadius: 5,
-                    background: i === current ? '#ce967e' : 'rgba(255,255,255,0.5)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s',
-                  }}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
+                    i === current
+                      ? 'w-8 bg-primary'
+                      : 'w-2.5 bg-white/50 hover:bg-white/70'
+                  }`}
                 />
               ))}
             </div>
           )}
         </div>
         {slide.productImage && (
-          <div className={styles.productImage}>
+          <div className="hidden lg:block relative w-[400px] h-[400px]">
             <Image
               src={slide.productImage}
               alt="Featured Jewelry"

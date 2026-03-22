@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAdmin } from '@/store/AdminContext';
 import { formatCurrency } from '@/utils/formatCurrency';
-import styles from './SearchModal.module.css';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -52,11 +51,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.searchHeader}>
-          <div className={styles.inputWrapper}>
-            <svg className={styles.searchIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <div className="fixed inset-0 bg-heading/50 backdrop-blur-sm z-[200] flex items-start justify-center pt-24 animate-fade-in" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-card-hover w-full max-w-2xl mx-4 overflow-hidden animate-scale-in" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-border">
+          <div className="flex-1 flex items-center gap-3">
+            <svg className="text-body-light shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
@@ -66,24 +65,24 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               placeholder="Search for products..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className={styles.input}
+              className="w-full text-heading text-base py-2 border-none outline-none placeholder:text-body-light bg-transparent"
             />
             {query && (
-              <button className={styles.clearBtn} onClick={() => setQuery('')}>
+              <button className="text-body-light hover:text-heading text-xl transition-colors" onClick={() => setQuery('')}>
                 &times;
               </button>
             )}
           </div>
-          <button className={styles.closeBtn} onClick={onClose}>
+          <button className="text-sm text-body hover:text-primary font-medium transition-colors" onClick={onClose}>
             Close
           </button>
         </div>
 
-        <div className={styles.results}>
+        <div className="max-h-[60vh] overflow-y-auto">
           {query.trim() && results.length === 0 && (
-            <div className={styles.noResults}>
-              <p>No products found for &ldquo;{query}&rdquo;</p>
-              <Link href="/shop" className={styles.browseLink} onClick={onClose}>
+            <div className="text-center py-12 px-6">
+              <p className="text-body mb-3">No products found for &ldquo;{query}&rdquo;</p>
+              <Link href="/shop" className="text-primary font-medium hover:underline" onClick={onClose}>
                 Browse all products
               </Link>
             </div>
@@ -91,38 +90,38 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
           {results.length > 0 && (
             <>
-              <div className={styles.resultCount}>
+              <div className="px-6 py-3 text-xs text-body-light uppercase tracking-wider">
                 {results.length} result{results.length !== 1 ? 's' : ''} found
               </div>
-              <div className={styles.resultList}>
+              <div>
                 {results.map((product) => (
                   <Link
                     key={product.id}
                     href={`/product/${product.slug}`}
-                    className={styles.resultItem}
+                    className="flex items-center gap-4 px-6 py-3 hover:bg-bg-blush transition-colors duration-200"
                     onClick={onClose}
                   >
-                    <div className={styles.resultImage}>
+                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-bg-ivory relative shrink-0">
                       <Image
                         src={product.images?.[0] || 'https://placehold.co/60x60?text=No+Image'}
                         alt={product.name}
                         fill
-                        sizes="60px"
+                        sizes="56px"
                         style={{ objectFit: 'cover' }}
                         unoptimized
                       />
                     </div>
-                    <div className={styles.resultInfo}>
-                      <h4 className={styles.resultName}>{product.name}</h4>
-                      <span className={styles.resultCategory}>{product.category}</span>
-                      <div className={styles.resultPrice}>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-medium text-heading truncate">{product.name}</h4>
+                      <span className="text-xs text-body-light capitalize">{product.category}</span>
+                      <div className="text-sm font-medium mt-0.5">
                         {product.salePrice ? (
                           <>
-                            <span className={styles.resultOriginalPrice}>{formatCurrency(product.price)}</span>
-                            <span>{formatCurrency(product.salePrice)}</span>
+                            <span className="text-body-light line-through mr-2">{formatCurrency(product.price)}</span>
+                            <span className="text-primary">{formatCurrency(product.salePrice)}</span>
                           </>
                         ) : (
-                          <span>{formatCurrency(product.price)}</span>
+                          <span className="text-heading">{formatCurrency(product.price)}</span>
                         )}
                       </div>
                     </div>
@@ -132,7 +131,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {results.length >= 8 && (
                 <Link
                   href={`/shop?search=${encodeURIComponent(query)}`}
-                  className={styles.viewAll}
+                  className="block text-center py-4 text-primary font-medium text-sm hover:underline border-t border-border"
                   onClick={onClose}
                 >
                   View all results
@@ -142,13 +141,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           )}
 
           {!query.trim() && (
-            <div className={styles.suggestions}>
-              <p className={styles.suggestionsTitle}>Popular Searches</p>
-              <div className={styles.suggestionTags}>
+            <div className="px-6 py-8">
+              <p className="text-xs text-body-light uppercase tracking-wider mb-4">Popular Searches</p>
+              <div className="flex flex-wrap gap-2">
                 {['Rings', 'Earrings', 'Diamond', 'Gold', 'Pendant', 'Bracelet'].map((tag) => (
                   <button
                     key={tag}
-                    className={styles.suggestionTag}
+                    className="px-4 py-2 rounded-full border border-border text-sm text-body hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
                     onClick={() => setQuery(tag)}
                   >
                     {tag}
